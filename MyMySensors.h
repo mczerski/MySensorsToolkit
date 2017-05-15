@@ -80,9 +80,11 @@ class PowerManager {
   PowerManager() {}
 public:
   static PowerManager& initInstance(uint8_t powerBoostPin,  bool initialBoostOn) {
-    instance_.powerBoostPin_ = powerBoostPin;
-    pinMode(powerBoostPin, OUTPUT);
-    digitalWrite(powerBoostPin, initialBoostOn);
+    if (powerBoostPin != uint8_t(-1)) {
+      instance_.powerBoostPin_ = powerBoostPin;
+      pinMode(powerBoostPin, OUTPUT);
+      digitalWrite(powerBoostPin, initialBoostOn);
+    }
     return instance_;
   }
   static PowerManager& getInstance() {
