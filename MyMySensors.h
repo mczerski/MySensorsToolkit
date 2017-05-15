@@ -16,13 +16,29 @@ int convert2mV(int v) {
   return voltage_mV;
 }
 
-uint8_t convertmV2Level(int v) {
+uint8_t convertnV2LevelCoincell(int v) {
   if (v >= 3000)
     return 100;
   else if (v <= 1800)
     return 0;
   else
     return (v - 1800) / ((30 - 18));
+}
+
+uint8_t convertnV2LevelLiIon(int v) {
+  if (v >= 4200)
+    return 100;
+  else if (v <= 3000)
+    return 0;
+  else
+    return (v - 3000) / ((42 - 30));
+}
+
+uint8_t convertmV2Level(int v, bool liIonBattery) {
+  if (liIonBattery)
+    return convertnV2LevelLiIon(v);
+  else
+    return convertnV2LevelCoincell(v);
 }
 
 template <typename ValueType>
@@ -76,6 +92,7 @@ class PowerManager {
   uint8_t batteryPin_ = -1;
   uint8_t lastBatteryLevel_ = -1;
   uint8_t noUpdatesBatteryLevel_ = 0;
+  bool liIonBattery_ = false;
   static PowerManager instance_;
   PowerManager() {}
 public:
@@ -90,8 +107,9 @@ public:
   static PowerManager& getInstance() {
     return instance_;
   }
-  void setBatteryPin(uint8_t batteryPin) {
+  void setBatteryPin(uint8_t batteryPin, bool liIonBattery = false) {
     batteryPin_ = batteryPin;
+    liIonBattery_ = liIonBattery;
     analogReference(INTERNAL);
   }
   void turnBoosterOn() {
@@ -108,8 +126,11 @@ public:
     Serial.print("V: ");
     Serial.println(voltage);
     #endif
-    uint8_t batteryLevel = convertmV2Level(voltage);
+    uint8_t batteryLevel = convertmV2Level(voltage, liIonBattery_);
     handleBatteryLevel(batteryLevel, lastBatteryLevel_, noUpdatesBatteryLevel_);
+  }
+  void forceResend() {
+    noUpdatesBatteryLevel_ = FORCE_UPDATE_N_READS;
   }
 };
 
@@ -155,7 +176,9 @@ public:
   void presentValue() {
     present(childId_, sensorType_);
   }
-  bool updateValue(ValueType current) {
+  bool updateValue(ValueType current, bool force=false) {
+    if (force)
+      forceResend();
     return handleValue(current, last_, noUpdates_, msg_);
   }
   void forceResend() {
