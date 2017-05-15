@@ -3,18 +3,13 @@
 
 #include <MySensors.h>
 
+namespace mymysensors {
+
 static const uint8_t FORCE_UPDATE_N_READS = 10;
 static const unsigned long UPDATE_INTERVAL = 1000;
 static const uint8_t N_RETRIES = 14;
 
-#define BATTERY_PIN A0
-uint8_t lastBatteryLevel = -1;
-uint8_t noUpdatesBatteryLevel = 0;
 uint8_t consecutiveFails = 0;
-
-void myMySensorsSetup() {
-  analogReference(INTERNAL);
-}
 
 int convert2mV(int v) {
   int voltage_mV = v * 1.1 * 1.1 * 1000 * 10 / 1024; //includes 1/11 divider
@@ -76,18 +71,50 @@ void handleBatteryLevel(uint8_t value, uint8_t &lastValue, uint8_t &noUpdatesVal
   }
 }
 
-void reportBatteryLevel() {
-  int voltage = convert2mV(analogRead(BATTERY_PIN));
-  #ifdef MY_DEBUG2
-  Serial.print("V: ");
-  Serial.println(voltage);
-  #endif
-  uint8_t batteryLevel = convertmV2Level(voltage);
-  handleBatteryLevel(batteryLevel, lastBatteryLevel, noUpdatesBatteryLevel);
-}
+class PowerManager {
+  uint8_t powerBoostPin_ = -1;
+  uint8_t batteryPin_ = -1;
+  uint8_t lastBatteryLevel_ = -1;
+  uint8_t noUpdatesBatteryLevel_ = 0;
+  static PowerManager instance_;
+  PowerManager() {}
+public:
+  static PowerManager& initInstance(uint8_t powerBoostPin,  bool initialBoostOn) {
+    instance_.powerBoostPin_ = powerBoostPin;
+    pinMode(powerBoostPin, OUTPUT);
+    digitalWrite(powerBoostPin, initialBoostOn);
+    return instance_;
+  }
+  static PowerManager& getInstance() {
+    return instance_;
+  }
+  void setBatteryPin(uint8_t batteryPin) {
+    batteryPin_ = batteryPin;
+    analogReference(INTERNAL);
+  }
+  void turnBoosterOn() {
+    digitalWrite(powerBoostPin_, HIGH);
+  }
+  void turnBoosterOff() {
+    digitalWrite(powerBoostPin_, LOW);
+  }
+  void reportBatteryLevel() {
+    if (batteryPin_ == uint8_t(-1))
+      return;
+    int voltage = convert2mV(analogRead(batteryPin_));
+    #ifdef MY_DEBUG2
+    Serial.print("V: ");
+    Serial.println(voltage);
+    #endif
+    uint8_t batteryLevel = convertmV2Level(voltage);
+    handleBatteryLevel(batteryLevel, lastBatteryLevel_, noUpdatesBatteryLevel_);
+  }
+};
+
+PowerManager PowerManager::instance_;
 
 unsigned long getSleepTimeout(bool success, unsigned long sleep = 0) {
-  reportBatteryLevel();
+  PowerManager::getInstance().reportBatteryLevel();
   if (!success) {
     if (consecutiveFails < N_RETRIES) {
       consecutiveFails++;
@@ -133,5 +160,7 @@ public:
     noUpdates_ = FORCE_UPDATE_N_READS;
   }
 };
+
+} // mymysensors
 
 #endif //MyMySensors_h
