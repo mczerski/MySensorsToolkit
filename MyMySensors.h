@@ -42,13 +42,21 @@ uint8_t convertmV2Level(int v, bool liIonBattery) {
 }
 
 template <typename ValueType>
-bool sendValue(MyMessage &msg, ValueType value) {
+bool sendMessage(MyMessage &msg, ValueType value) {
   return send(msg.set(value), true);
 }
 
 template <>
-bool sendValue(MyMessage &msg, float value) {
+bool sendMessage(MyMessage &msg, float value) {
   return send(msg.set(value, 1), true);
+}
+
+template <typename ValueType>
+void sendValue(MyMessage &msg, ValueType value, byte retries = 10)
+{
+  for (int i=0; i<retries; i++)
+    if (sendMessage<ValueType>(msg, value))
+      break;
 }
 
 template <typename ValueType>
@@ -60,13 +68,13 @@ bool handleValue(ValueType value, ValueType &lastValue, uint8_t &noUpdatesValue,
   if (lastValue != value || noUpdatesValue == FORCE_UPDATE_N_READS) {
     lastValue = value;
 
-    success = sendValue(msg, value);
+    success = sendMessage(msg, value);
     if (success) {
       noUpdatesValue = 0;
     }
     else {
       noUpdatesValue = FORCE_UPDATE_N_READS;
-      #ifdef MY_DEBUG2
+      #ifdef MY_MY_DEBUG
       Serial.println("Send failed");
       #endif
     }
@@ -122,7 +130,7 @@ public:
     if (batteryPin_ == uint8_t(-1))
       return;
     int voltage = convert2mV(analogRead(batteryPin_));
-    #ifdef MY_DEBUG2
+    #ifdef MY_MY_DEBUG
     Serial.print("V: ");
     Serial.println(voltage);
     #endif
@@ -147,7 +155,7 @@ unsigned long getSleepTimeout(bool success, unsigned long sleep = 0) {
     consecutiveFails = 0;
   }
   unsigned long sleepTimeout = consecutiveFails ? (1<<(consecutiveFails-1))*UPDATE_INTERVAL : sleep;
-  #ifdef MY_DEBUG2
+  #ifdef MY_MY_DEBUG
   Serial.print("Sleep: ");
   Serial.println(sleepTimeout);
   wait(500);
