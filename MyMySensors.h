@@ -1,13 +1,17 @@
 #ifndef MyMySensors_h
 #define MyMySensors_h
 
+#define MY_SLEEP_TRANSPORT_RECONNECT_TIMEOUT_MS 0
 #include <MySensors.h>
+
+#include <math.h>
 
 namespace mymysensors {
 
 static const uint8_t FORCE_UPDATE_N_READS = 10;
 static const unsigned long UPDATE_INTERVAL = 1000;
 static const uint8_t N_RETRIES = 14;
+static const int BATTERY_LEVEL_TRESHOLD = 5;
 
 uint8_t consecutiveFails = 0;
 
@@ -60,12 +64,10 @@ void sendValue(MyMessage &msg, ValueType value, byte retries = 10)
 }
 
 template <typename ValueType>
-bool handleValue(ValueType value, ValueType &lastValue, uint8_t &noUpdatesValue, MyMessage &msg) {
+bool handleValue(ValueType value, ValueType &lastValue, uint8_t &noUpdatesValue, MyMessage &msg, ValueType treshold) {
   bool success = true;
-  if (value != lastValue)
-    consecutiveFails = 0;
 
-  if (lastValue != value || noUpdatesValue == FORCE_UPDATE_N_READS) {
+  if (abs(lastValue - value) > treshold || noUpdatesValue == FORCE_UPDATE_N_READS) {
     lastValue = value;
 
     success = sendMessage(msg, value);
@@ -85,7 +87,7 @@ bool handleValue(ValueType value, ValueType &lastValue, uint8_t &noUpdatesValue,
 }
 
 void handleBatteryLevel(uint8_t value, uint8_t &lastValue, uint8_t &noUpdatesValue) {
-  if (value != lastValue || noUpdatesValue == FORCE_UPDATE_N_READS) {
+  if (abs(int(value) - int(lastValue)) > BATTERY_LEVEL_TRESHOLD or noUpdatesValue == FORCE_UPDATE_N_READS) {
     lastValue = value;
     sendBatteryLevel(value);
     noUpdatesValue = 0;
@@ -178,16 +180,17 @@ class MyValue {
   uint8_t noUpdates_;
   uint8_t childId_;
   uint8_t sensorType_;
+  ValueType treshold_;
 public:
-  MyValue(uint8_t sensor, uint8_t type, uint8_t sensorType)
-    : msg_(sensor, type), last_(-1), noUpdates_(0), childId_(sensor), sensorType_(sensorType) {}
+  MyValue(uint8_t sensor, uint8_t type, uint8_t sensorType, ValueType treshold)
+    : msg_(sensor, type), last_(-1), noUpdates_(0), childId_(sensor), sensorType_(sensorType), treshold_(treshold) {}
   void presentValue() {
     present(childId_, sensorType_);
   }
   bool updateValue(ValueType current, bool force=false) {
     if (force)
       forceResend();
-    return handleValue(current, last_, noUpdates_, msg_);
+    return handleValue(current, last_, noUpdates_, msg_, treshold_);
   }
   void forceResend() {
     noUpdates_ = FORCE_UPDATE_N_READS;
