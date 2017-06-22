@@ -182,7 +182,7 @@ class MyValue {
   uint8_t sensorType_;
   ValueType treshold_;
 public:
-  MyValue(uint8_t sensor, uint8_t type, uint8_t sensorType, ValueType treshold)
+  MyValue(uint8_t sensor, uint8_t type, uint8_t sensorType, ValueType treshold = 0)
     : msg_(sensor, type), last_(-1), noUpdates_(0), childId_(sensor), sensorType_(sensorType), treshold_(treshold) {}
   void presentValue() {
     present(childId_, sensorType_);
