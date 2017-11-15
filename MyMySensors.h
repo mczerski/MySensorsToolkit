@@ -46,13 +46,18 @@ uint8_t convertmV2Level(int v, bool liIonBattery) {
 }
 
 template <typename ValueType>
-bool sendMessage(MyMessage &msg, ValueType value) {
+bool sendMessage_(MyMessage &msg, ValueType value) {
   return send(msg.set(value), true);
 }
 
 template <>
-bool sendMessage(MyMessage &msg, float value) {
+bool sendMessage_(MyMessage &msg, float value) {
   return send(msg.set(value, 1), true);
+}
+
+template <typename ValueType>
+bool sendMessage(MyMessage &msg, ValueType value) {
+  return sendMessage_(msg, value) and wait(2000, C_SET, msg.type);
 }
 
 template <typename ValueType>
@@ -77,7 +82,11 @@ bool handleValue(ValueType value, ValueType &lastValue, uint8_t &noUpdatesValue,
     else {
       noUpdatesValue = FORCE_UPDATE_N_READS;
       #ifdef MY_MY_DEBUG
-      Serial.println("Send failed");
+      Serial.print("t=");
+      Serial.print(msg.type);
+      Serial.print(",c=");
+      Serial.print(msg.sensor);
+      Serial.println(". Send failed");
       #endif
     }
   } else {
