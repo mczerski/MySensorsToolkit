@@ -12,6 +12,7 @@ static const uint8_t FORCE_UPDATE_N_READS = 10;
 static const unsigned long UPDATE_INTERVAL = 1000;
 static const uint8_t N_RETRIES = 14;
 static const int BATTERY_LEVEL_TRESHOLD = 5;
+static const int MAX_MY_MY_MESSAGES = 10;
 
 uint8_t consecutiveFails = 0;
 
@@ -60,13 +61,61 @@ bool sendMessage(MyMessage &msg, ValueType value) {
   return sendMessage_(msg, value) and wait(2000, C_SET, msg.type);
 }
 
-template <typename ValueType>
-void sendValue(MyMessage &msg, ValueType value, byte retries = 10)
+enum MyMyMessageState {
+  SENT,
+  WAITING_FOR_ACK
+};
+
+class MyMyMessage
 {
-  for (int i=0; i<retries; i++)
-    if (sendMessage<ValueType>(msg, value))
-      break;
-}
+  MyMessage msg_;
+  unsigned long sendTime_ = 0;
+  MyMyMessageState state_ = SENT;
+  struct MyMessagePtr_ {
+    MyMessage* myMessage = nullptr;
+    MyMyMessage* myMyMesage = nullptr;
+  };
+  static MyMessagePtr_ messages_[MAX_MY_MY_MESSAGES];
+  static int messagesNum_;
+public:
+  MyMyMessage(uint8_t sensor, uint8_t type) : msg_(sensor, type)
+  {
+    if (messagesNum_ < MAX_MY_MY_MESSAGES) {
+      messages_[messagesNum_].myMessage = &msg_;
+      messages_[messagesNum_++].myMyMesage = this;
+    }
+  }
+  static void setSent(const MyMessage& msg)
+  {
+    for (int i=0; i<messagesNum_; i++)
+      if (messages_[i].myMessage == &msg)
+        messages_[i].myMyMesage->state_ = SENT;
+  }
+  static void update()
+  {
+    for (int i=0; i<messagesNum_; i++) {
+      MyMyMessage &msg = *messages_[i].myMyMesage;
+      if (msg.state_ == WAITING_FOR_ACK and millis() - msg.sendTime_ > 2000) {
+        msg.sendTime_ = millis();
+        for (int i=0; i<10; i++)
+          if (::send(msg.msg_, true))
+            continue;
+      }
+    }
+  }
+  template <typename ValueType>
+  void send(ValueType value)
+  {
+    state_ = WAITING_FOR_ACK;
+    sendTime_ = millis();
+    for (int i=0; i<10; i++)
+      if (sendMessage_<ValueType>(msg_, value))
+        return;
+  }
+};
+
+MyMyMessage::MyMessagePtr_ MyMyMessage::messages_[];
+int MyMyMessage::messagesNum_ = 0;
 
 template <typename ValueType>
 bool handleValue(ValueType value, ValueType &lastValue, uint8_t &noUpdatesValue, MyMessage &msg, ValueType treshold) {
