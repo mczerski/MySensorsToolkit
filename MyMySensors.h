@@ -1,9 +1,6 @@
 #ifndef MyMySensors_h
 #define MyMySensors_h
 
-#define MY_SLEEP_TRANSPORT_RECONNECT_TIMEOUT_MS 0
-#include <MySensors.h>
-
 #include <math.h>
 
 namespace mymysensors {
@@ -111,6 +108,9 @@ public:
     for (int i=0; i<10; i++)
       if (sendMessage_<ValueType>(msg_, value))
         return;
+  }
+  const MyMessage& getMyMessage() const {
+    return msg_;
   }
 };
 
