@@ -9,7 +9,6 @@ static const uint8_t FORCE_UPDATE_N_READS = 10;
 static const unsigned long UPDATE_INTERVAL = 1000;
 static const uint8_t N_RETRIES = 14;
 static const int BATTERY_LEVEL_TRESHOLD = 5;
-static const int MAX_MY_MY_MESSAGES = 10;
 
 uint8_t consecutiveFails = 0;
 
@@ -58,87 +57,6 @@ bool sendMessage(MyMessage &msg, ValueType value) {
   setMessageValue_(msg, value);
   return send(msg, true) and wait(2000, C_SET, msg.type);
 }
-
-enum MyMyMessageState {
-  SENT,
-  WAITING_FOR_ACK,
-  WAITING_TO_SEND
-};
-
-class MyMyMessage
-{
-  MyMessage msg_;
-  unsigned long sendTime_ = 0;
-  MyMyMessageState state_ = SENT;
-  static MyMyMessage* messages_[MAX_MY_MY_MESSAGES];
-  static int messagesNum_;
-  static void send_(MyMyMessage &msg) {
-    msg.sendTime_ = millis();
-    if (::send(msg.msg_, true))
-      return;
-	#ifdef MY_MY_DEBUG
-	Serial.print("MyMyMessage: failed to send ");
-	Serial.print("t=");
-	Serial.print(msg.getMyMessage().type);
-	Serial.print(",c=");
-	Serial.println(msg.getMyMessage().sensor);
-	#endif
-  }
-public:
-  MyMyMessage(uint8_t sensor, uint8_t type) : msg_(sensor, type)
-  {
-    if (messagesNum_ < MAX_MY_MY_MESSAGES) {
-      messages_[messagesNum_++] = this;
-    }
-  }
-  static void setSent(const MyMessage& msg)
-  {
-    for (int i=0; i<messagesNum_; i++) {
-      const MyMessage& myMsg = messages_[i]->getMyMessage();
-      if (myMsg.sensor == msg.sensor and myMsg.type == msg.type)
-        messages_[i]->state_ = SENT;
-    }
-  }
-  static void update()
-  {
-    for (int i=0; i<messagesNum_; i++) {
-      MyMyMessage &msg = *messages_[i];
-      if (msg.state_ == WAITING_FOR_ACK) {
-        if (millis() - msg.sendTime_ > 2000) {
-          #ifdef MY_MY_DEBUG
-          Serial.print("MyMyMessage: resending ");
-          Serial.print("t=");
-          Serial.print(msg.getMyMessage().type);
-          Serial.print(",c=");
-          Serial.println(msg.getMyMessage().sensor);
-          #endif
-          send_(msg);
-        }
-        return;
-      }
-    }
-    for (int i=0; i<messagesNum_; i++) {
-      MyMyMessage &msg = *messages_[i];
-      if (msg.state_ == WAITING_TO_SEND) {
-        msg.state_ = WAITING_FOR_ACK;
-        send_(msg);
-        return;
-      }
-    }
-  }
-  template <typename ValueType>
-  void send(ValueType value)
-  {
-    state_ = WAITING_TO_SEND;
-    setMessageValue_(msg_, value);
-  }
-  const MyMessage& getMyMessage() const {
-    return msg_;
-  }
-};
-
-MyMyMessage* MyMyMessage::messages_[];
-int MyMyMessage::messagesNum_ = 0;
 
 template <typename ValueType>
 bool handleValue(ValueType value, ValueType &lastValue, uint8_t &noUpdatesValue, MyMessage &msg, ValueType treshold) {

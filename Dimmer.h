@@ -1,8 +1,6 @@
 #ifndef Dimmer_h
 #define Dimmer_h
 
-//#include "MyMySensorsBase.h"
-
 namespace mymysensors {
 
 struct Functions {

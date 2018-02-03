@@ -1,8 +1,6 @@
 #ifndef Switch_h
 #define Switch_h
 
-//#include "MyMySensorsBase.h"
-
 namespace mymysensors {
 
 class Switch {
