@@ -45,6 +45,7 @@ public:
   }
   static void update() {
     timer_.update();
+    MyMyMessage::update();
     for (size_t i=0; i<sensorsCount_; i++)
       sensors_[i]->update_();
     if (not loopCalled_) {

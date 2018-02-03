@@ -44,23 +44,25 @@ uint8_t convertmV2Level(int v, bool liIonBattery) {
 }
 
 template <typename ValueType>
-bool sendMessage_(MyMessage &msg, ValueType value) {
-  return send(msg.set(value), true);
+void setMessageValue_(MyMessage &msg, ValueType value) {
+  msg.set(value);
 }
 
 template <>
-bool sendMessage_(MyMessage &msg, float value) {
-  return send(msg.set(value, 1), true);
+void setMessageValue_(MyMessage &msg, float value) {
+  msg.set(value, 1);
 }
 
 template <typename ValueType>
 bool sendMessage(MyMessage &msg, ValueType value) {
-  return sendMessage_(msg, value) and wait(2000, C_SET, msg.type);
+  setMessageValue_(msg, value);
+  return send(msg, true) and wait(2000, C_SET, msg.type);
 }
 
 enum MyMyMessageState {
   SENT,
-  WAITING_FOR_ACK
+  WAITING_FOR_ACK,
+  WAITING_TO_SEND
 };
 
 class MyMyMessage
@@ -68,53 +70,74 @@ class MyMyMessage
   MyMessage msg_;
   unsigned long sendTime_ = 0;
   MyMyMessageState state_ = SENT;
-  struct MyMessagePtr_ {
-    MyMessage* myMessage = nullptr;
-    MyMyMessage* myMyMesage = nullptr;
-  };
-  static MyMessagePtr_ messages_[MAX_MY_MY_MESSAGES];
+  static MyMyMessage* messages_[MAX_MY_MY_MESSAGES];
   static int messagesNum_;
+  static void send_(MyMyMessage &msg) {
+    msg.sendTime_ = millis();
+    if (::send(msg.msg_, true))
+      return;
+	#ifdef MY_MY_DEBUG
+	Serial.print("MyMyMessage: failed to send ");
+	Serial.print("t=");
+	Serial.print(msg.getMyMessage().type);
+	Serial.print(",c=");
+	Serial.println(msg.getMyMessage().sensor);
+	#endif
+  }
 public:
   MyMyMessage(uint8_t sensor, uint8_t type) : msg_(sensor, type)
   {
     if (messagesNum_ < MAX_MY_MY_MESSAGES) {
-      messages_[messagesNum_].myMessage = &msg_;
-      messages_[messagesNum_++].myMyMesage = this;
+      messages_[messagesNum_++] = this;
     }
   }
   static void setSent(const MyMessage& msg)
   {
-    for (int i=0; i<messagesNum_; i++)
-      if (messages_[i].myMessage == &msg)
-        messages_[i].myMyMesage->state_ = SENT;
+    for (int i=0; i<messagesNum_; i++) {
+      const MyMessage& myMsg = messages_[i]->getMyMessage();
+      if (myMsg.sensor == msg.sensor and myMsg.type == msg.type)
+        messages_[i]->state_ = SENT;
+    }
   }
   static void update()
   {
     for (int i=0; i<messagesNum_; i++) {
-      MyMyMessage &msg = *messages_[i].myMyMesage;
-      if (msg.state_ == WAITING_FOR_ACK and millis() - msg.sendTime_ > 2000) {
-        msg.sendTime_ = millis();
-        for (int i=0; i<10; i++)
-          if (::send(msg.msg_, true))
-            continue;
+      MyMyMessage &msg = *messages_[i];
+      if (msg.state_ == WAITING_FOR_ACK) {
+        if (millis() - msg.sendTime_ > 2000) {
+          #ifdef MY_MY_DEBUG
+          Serial.print("MyMyMessage: resending ");
+          Serial.print("t=");
+          Serial.print(msg.getMyMessage().type);
+          Serial.print(",c=");
+          Serial.println(msg.getMyMessage().sensor);
+          #endif
+          send_(msg);
+        }
+        return;
+      }
+    }
+    for (int i=0; i<messagesNum_; i++) {
+      MyMyMessage &msg = *messages_[i];
+      if (msg.state_ == WAITING_TO_SEND) {
+        msg.state_ = WAITING_FOR_ACK;
+        send_(msg);
+        return;
       }
     }
   }
   template <typename ValueType>
   void send(ValueType value)
   {
-    state_ = WAITING_FOR_ACK;
-    sendTime_ = millis();
-    for (int i=0; i<10; i++)
-      if (sendMessage_<ValueType>(msg_, value))
-        return;
+    state_ = WAITING_TO_SEND;
+    setMessageValue_(msg_, value);
   }
   const MyMessage& getMyMessage() const {
     return msg_;
   }
 };
 
-MyMyMessage::MyMessagePtr_ MyMyMessage::messages_[];
+MyMyMessage* MyMyMessage::messages_[];
 int MyMyMessage::messagesNum_ = 0;
 
 template <typename ValueType>

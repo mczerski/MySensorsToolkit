@@ -11,7 +11,7 @@ class MyDuration
 {
 public:
   static void setClockPrescaler(uint8_t clockPrescaler) {
-    setClockPrescaler(clockPrescaler);
+    ::setClockPrescaler(clockPrescaler);
   }
   typedef unsigned long duration_ms_t;
   explicit MyDuration(duration_ms_t duration) : duration_(rescaleDuration(duration)) {}
