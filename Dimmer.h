@@ -1,6 +1,8 @@
 #ifndef Dimmer_h
 #define Dimmer_h
 
+#include "array.h"
+
 namespace mymysensors {
 
 struct Functions {
@@ -222,37 +224,51 @@ public:
 
 };
 
-class CwWwDimmer: public Dimmer {
-  uint8_t wwPin_;
-  uint8_t cwPin_;
+template <size_t N>
+class CwWwDimmerN: public Dimmer {
+  const array<uint8_t, N> wwPin_;
+  const array<uint8_t, N> cwPin_;
 
   void setLevel_(uint8_t level) override {
     uint8_t wwLevel = level < 128 ? 2*level : 255;
     uint8_t cwLevel = level > 128 ? 2*(level - 128) : 0;
-    driveLedPin_(wwPin_, wwLevel);
-    driveLedPin_(cwPin_, cwLevel);
+    for (size_t n=0; n<N; n++) {
+      driveLedPin_(wwPin_[n], wwLevel);
+      driveLedPin_(cwPin_[n], cwLevel);
+    }
   }
 
 public:
-  CwWwDimmer(uint8_t wwPin, uint8_t cwPin, bool inverted, uint8_t dimmSpeed, Functions functions)
+  CwWwDimmerN(const array<uint8_t, N> &wwPin, const array<uint8_t, N> &cwPin, bool inverted, uint8_t dimmSpeed, Functions functions)
     : Dimmer(inverted, dimmSpeed, functions), wwPin_(wwPin), cwPin_(cwPin) {
       init_();
   }
+  CwWwDimmerN(uint8_t wwPin, uint8_t cwPin, bool inverted, uint8_t dimmSpeed, Functions functions)
+    : CwWwDimmerN(array<uint8_t, N>{wwPin}, array<uint8_t, N>{cwPin}, inverted, dimmSpeed, functions) {}
 };
 
-class SimpleDimmer: public Dimmer {
-  uint8_t pin_;
+using CwWwDimmer = CwWwDimmerN<1>;
+
+template <size_t N = 1>
+class SimpleDimmerN: public Dimmer {
+  const array<uint8_t, N> pin_;
 
   void setLevel_(uint8_t level) override {
-    driveLedPin_(pin_, level);
+    for (size_t n=0; n<N; n++) {
+      driveLedPin_(pin_[n], level);
+    }
   }
 
 public:
-  SimpleDimmer(uint8_t pin, bool inverted, uint8_t dimmSpeed, Functions functions)
+  SimpleDimmerN(const array<uint8_t, N> &pin, bool inverted, uint8_t dimmSpeed, Functions functions)
     : Dimmer(inverted, dimmSpeed, functions), pin_(pin) {
       init_();
   }
+  SimpleDimmerN(uint8_t pin, bool inverted, uint8_t dimmSpeed, Functions functions)
+    : SimpleDimmerN(array<uint8_t, N>{pin}, inverted, dimmSpeed, functions) {}
 };
+
+using SimpleDimmer = SimpleDimmerN<1>;
 
 } // mymysensors
 
