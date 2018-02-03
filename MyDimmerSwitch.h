@@ -68,7 +68,7 @@ class MyDimmerSwitch : public MyMySensorsBase
   }
 public:
   MyDimmerSwitch(uint8_t sensorId, Dimmer &dim, Switch &sw)
-    : MyMySensorsBase(sensorId, S_DIMMER), 
+    : MyMySensorsBase(sensorId, S_DIMMER),
       dim_(dim),
       sw_(sw),
       dimmerMsg_(sensorId, V_DIMMER),

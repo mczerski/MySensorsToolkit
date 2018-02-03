@@ -2,37 +2,31 @@
 #define MyRelaySwitch_h
 
 #include "MyMySensorsBase.h"
+#include "Relay.h"
 #include "Switch.h"
 
 namespace mymysensors {
 
 class MyRelaySwitch : public MyMySensorsBase
 {
-  bool state_;
-  bool prevSwState_;
-  int relayPin_;
+  Relay &relay_;
   Switch &sw_;
   MyMyMessage lightMsg_;
   void sendCurrentState_() {
-    lightMsg_.send(state_);
+    lightMsg_.send(relay_.getState());
     #ifdef MY_MY_DEBUG
     Serial.print("sendCurrentState ");
-    Serial.print(state_);
+    Serial.print(relay_.getState());
     Serial.print(" for child id ");
-    Serial.println(lightMsg_.sensor);
+    Serial.println(lightMsg_.getMyMessage().sensor);
     #endif
   }
   void firstUpdate_() override {
     sendCurrentState_();
   }
   void update_() override {
-    bool currSwState = sw_.update();
-    if (prevSwState_ != currSwState && state_ != currSwState) {
-        state_ = currSwState;
-        sendCurrentState_();
-    }
-    prevSwState_ = currSwState;
-    digitalWrite(relayPin_, !state_);
+    if (relay_.update(sw_.update()))
+      sendCurrentState_();
   }
   void receive_(const MyMessage &message) override {
     if (mGetCommand(message) == C_REQ) {
@@ -48,24 +42,21 @@ class MyRelaySwitch : public MyMySensorsBase
         Serial.print("] state to ");
         Serial.print(requestedState);
         Serial.print( ", from " );
-        Serial.println(state_);
+        Serial.println(relay_.getState());
         #endif
 
-        state_ = requestedState;
+        relay_.set(requestedState);
         sendCurrentState_();
       }
     }
   }
 public:
-  MyRelaySwitch(uint8_t sensorId, Switch &sw, int relayPin)
+  MyRelaySwitch(uint8_t sensorId, Relay &relay, Switch &sw)
     : MyMySensorsBase(sensorId, S_BINARY),
-      state_(false),
-      prevSwState_(false),
-      relayPin_(relayPin),
+      relay_(relay),
       sw_(sw),
       lightMsg_(sensorId, V_STATUS)
   {
-    pinMode(relayPin_, OUTPUT);
   }
 };
 
