@@ -1,6 +1,7 @@
 #ifndef MyMySensors_h
 #define MyMySensors_h
 
+#include <MySensors.h>
 #include <math.h>
 
 namespace mymysensors {
