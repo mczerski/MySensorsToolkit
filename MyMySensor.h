@@ -63,6 +63,18 @@ class MyValue : public MyValueBase {
     bool success = true;
 
     if (abs(lastValue_ - value) > treshold_ || noUpdates_ == FORCE_UPDATE_N_READS) {
+      #ifdef MY_MY_DEBUG
+      Serial.print("t=");
+      Serial.print(msg_.type);
+      Serial.print(",c=");
+      Serial.print(msg_.sensor);
+      Serial.print(". last=");
+      Serial.print(lastValue_);
+      Serial.print(", curent=");
+      Serial.print(value);
+      Serial.print(", noUpdates=");
+      Serial.println(noUpdates_);
+      #endif
       lastValue_ = value;
 
       success = sendMessage_(value);
@@ -98,7 +110,7 @@ public:
 
 class MyMySensor {
   // Sleep time between sensor updates (in milliseconds)
-  static const uint64_t SLEEP_TIME = 60000;
+  static const uint64_t SLEEP_TIME = 600000;
   static constexpr uint8_t MAX_SENSORS = 10;
   static uint8_t sensorsCount_;
   static MyMySensor* sensors_[MAX_SENSORS];
@@ -112,6 +124,7 @@ class MyMySensor {
   virtual void begin_() {};
   virtual unsigned long preUpdate_() = 0;
   virtual void update_() = 0;
+
   static unsigned long getSleepTimeout_(bool success, unsigned long sleep = 0) {
     if (!success) {
       if (consecutiveFails_ < N_RETRIES) {
@@ -144,6 +157,7 @@ public:
     if (sensorsCount_ < MAX_SENSORS)
       sensors_[sensorsCount_++] = this;
   }
+
   static void present() {
     MyValueBase::present();
   }
@@ -190,13 +204,14 @@ public:
       Serial.println("Wake up from button");
       #endif
     }
-    else if (wakeUpCause == digitalPinToInterrupt(interruptPin_)) {
+    else if (interruptPin_ != INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(interruptPin_)) {
       digitalWrite(MY_LED, LOW);
       #ifdef MY_MY_DEBUG
       Serial.println("Wake up from sensor");
       #endif
     }
   }
+
 };
 
 uint8_t MyMySensor::sensorsCount_ = 0;
