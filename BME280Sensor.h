@@ -6,9 +6,12 @@
 
 namespace mymysensors {
 
-class BME280HumiditySensor: public MyMySensorBase<float>
+
+class BME280Sensor: public MyMySensor
 {
   BME280I2C bmeSensor_;
+  MyValue<float> humidity_;
+  MyValue<float> temperature_;
   void begin_() override {
     if(!bmeSensor_.begin()){
       #ifdef MY_MY_DEBUG
@@ -16,16 +19,19 @@ class BME280HumiditySensor: public MyMySensorBase<float>
       #endif
     }
   }
-  float getValue_() override {
-    return bmeSensor_.hum();
-  }
   unsigned long preUpdate_() override {
     bmeSensor_.setMode(1);
     return 120;
   }
+  void update_() override {
+    humidity_.update(bmeSensor_.hum());
+    temperature_.update(bmeSensor_.temp());
+  }
 public:
-  BME280HumiditySensor(uint8_t sensorId, uint8_t type, uint8_t sensorType, float treshold = 0)
-    : MyMySensorBase(sensorId, type, sensorType, treshold), bmeSensor_(1, 1, 1, 0) {}
+  BME280Sensor(uint8_t humSensorId, uint8_t tempSensorId, float humTreshold = 0, float tempTreshold = 0)
+    : bmeSensor_(1, 1, 1, 0),
+      humidity_(humSensorId, V_HUM, S_HUM, humTreshold),
+      temperature_(tempSensorId, V_TEMP, S_TEMP, tempTreshold) {}
 };
 
 } // mymysensors
