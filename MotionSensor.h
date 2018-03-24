@@ -11,7 +11,7 @@ class MotionSensor: public MyMySensor
   uint8_t pin_;
   MyValue<uint16_t> tripped_;
   void begin_() override {
-    pinMode(pin_, INPUT_PULLUP);
+    pinMode(pin_, INPUT);
   }
   void update_() override {
     tripped_.update(digitalRead(pin_));

@@ -116,14 +116,16 @@ class MyMySensor {
   static MyMySensor* sensors_[MAX_SENSORS];
   static PowerManager* powerManager_;
   static uint8_t consecutiveFails_;
+  static uint8_t buttonPin_;
   static uint8_t interruptPin_;
   static uint8_t interruptMode_;
+  static bool alwaysBoostOn_;
   static const uint8_t N_RETRIES = 14;
   static const unsigned long UPDATE_INTERVAL = 1000;
 
   virtual void begin_() {};
-  virtual unsigned long preUpdate_() = 0;
-  virtual void update_() = 0;
+  virtual unsigned long preUpdate_() {return 0;};
+  virtual void update_() {};
 
   static unsigned long getSleepTimeout_(bool success, unsigned long sleep = 0) {
     if (!success) {
@@ -161,21 +163,28 @@ public:
   static void present() {
     MyValueBase::present();
   }
-  static void begin(uint8_t batteryPin = -1, bool liIonBattery = false, uint8_t powerBoostPin = -1,  bool initialBoostOn = false) {
+  static void begin(uint8_t batteryPin = -1, bool liIonBattery = false, uint8_t powerBoostPin = -1,  bool initialBoostOn = false, bool alwaysBoostOn = false, uint8_t buttonPin = -1) {
+    alwaysBoostOn_ = alwaysBoostOn;
+    if (buttonPin != uint8_t(-1)) {
+      buttonPin_ = buttonPin;
+      pinMode(buttonPin_, INPUT_PULLUP);
+    }
+
     pinMode(MY_LED, OUTPUT);
     digitalWrite(MY_LED, LOW);
-    pinMode(BUTTON_PIN, INPUT_PULLUP);
 
     powerManager_ = &PowerManager::getInstance();
-    powerManager_->setupPowerBoost(powerBoostPin, initialBoostOn);
+    powerManager_->setupPowerBoost(powerBoostPin, initialBoostOn or alwaysBoostOn_);
     powerManager_->setBatteryPin(batteryPin, liIonBattery);
     for (size_t i=0; i<sensorsCount_; i++)
       sensors_[i]->begin_();
   }
   static void update() {
-    powerManager_->turnBoosterOn();
-    //wait for everything to setup (100ms for dc/dc converter)
-    wait(100);
+    if (not alwaysBoostOn_) {
+      powerManager_->turnBoosterOn();
+      //wait for everything to setup (100ms for dc/dc converter)
+      wait(100);
+    }
 
     unsigned long maxWait = 0;
     for (size_t i=0; i<sensorsCount_; i++) {
@@ -196,8 +205,16 @@ public:
 
     digitalWrite(MY_LED, HIGH);
 
-    int wakeUpCause = sleep(digitalPinToInterrupt(BUTTON_PIN), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
-    if (wakeUpCause == digitalPinToInterrupt(BUTTON_PIN)) {
+    if (not alwaysBoostOn_)
+      powerManager_->turnBoosterOff();
+
+    int wakeUpCause;
+    if (buttonPin_ == INTERRUPT_NOT_DEFINED)
+      wakeUpCause = sleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+    else
+      wakeUpCause = sleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+
+    if (buttonPin_ != INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(buttonPin_)) {
       digitalWrite(MY_LED, LOW);
       MyValueBase::forceResend();
       #ifdef MY_MY_DEBUG
@@ -217,8 +234,10 @@ public:
 uint8_t MyMySensor::sensorsCount_ = 0;
 MyMySensor * MyMySensor::sensors_[];
 uint8_t MyMySensor::consecutiveFails_ = 0;
+uint8_t MyMySensor::buttonPin_ = INTERRUPT_NOT_DEFINED;
 uint8_t MyMySensor::interruptPin_ = INTERRUPT_NOT_DEFINED;
 uint8_t MyMySensor::interruptMode_ = MODE_NOT_DEFINED;
+bool MyMySensor::alwaysBoostOn_ = false;
 PowerManager* MyMySensor::powerManager_ = nullptr;
 
 } // mymysensors
