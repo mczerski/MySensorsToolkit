@@ -163,7 +163,7 @@ public:
   static void present() {
     MyValueBase::present();
   }
-  static void begin(uint8_t batteryPin = -1, bool liIonBattery = false, uint8_t powerBoostPin = -1,  bool initialBoostOn = false, bool alwaysBoostOn = false, uint8_t buttonPin = -1) {
+  static void begin(uint8_t batteryPin = -1, bool liIonBattery = false, uint8_t powerBoostPin = -1,  bool initialBoostOn = false, bool alwaysBoostOn = false, uint8_t buttonPin = INTERRUPT_NOT_DEFINED) {
     alwaysBoostOn_ = alwaysBoostOn;
     if (buttonPin != uint8_t(-1)) {
       buttonPin_ = buttonPin;
