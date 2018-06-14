@@ -23,9 +23,10 @@ class BME280Sensor: public MyMySensor
     bmeSensor_.setMode(1);
     return 120;
   }
-  void update_() override {
+  unsigned long update_() override {
     humidity_.update(bmeSensor_.hum());
     temperature_.update(bmeSensor_.temp());
+    return SLEEP_TIME;
   }
 public:
   BME280Sensor(uint8_t humSensorId, uint8_t tempSensorId, float humTreshold = 0, float tempTreshold = 0)

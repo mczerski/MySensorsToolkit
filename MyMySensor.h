@@ -109,8 +109,6 @@ public:
 };
 
 class MyMySensor {
-  // Sleep time between sensor updates (in milliseconds)
-  static const uint64_t SLEEP_TIME = 600000;
   static constexpr uint8_t MAX_SENSORS = 10;
   static uint8_t sensorsCount_;
   static MyMySensor* sensors_[MAX_SENSORS];
@@ -122,10 +120,12 @@ class MyMySensor {
   static bool alwaysBoostOn_;
   static const uint8_t N_RETRIES = 14;
   static const unsigned long UPDATE_INTERVAL = 1000;
+  static unsigned long now_;
+  static unsigned long lastUpdate_;
 
   virtual void begin_() {};
   virtual unsigned long preUpdate_() {return 0;};
-  virtual void update_() {};
+  virtual unsigned long update_() {return SLEEP_TIME;};
 
   static unsigned long getSleepTimeout_(bool success, unsigned long sleep = 0) {
     if (!success) {
@@ -146,6 +146,9 @@ class MyMySensor {
   }
 
 protected:
+  // Sleep time between sensor updates (in milliseconds)
+  static constexpr unsigned long SLEEP_TIME = 600000;
+
   void requestInterrupt(uint8_t pin, uint8_t mode) {
     if (interruptPin_ == INTERRUPT_NOT_DEFINED) {
       interruptPin_ = pin;
@@ -196,15 +199,18 @@ public:
 	checkTransport();
 
     MyValueBase::beforeUpdate();
-    for (size_t i=0; i<sensorsCount_; i++)
-      sensors_[i]->update_();
+	unsigned long minWait = -1;
+    for (size_t i=0; i<sensorsCount_; i++) {
+      auto wait = sensors_[i]->update_();
+      minWait = min(minWait, wait);
+    }
     bool success = MyValueBase::afterUpdate();
 
 	powerManager_->reportBatteryLevel();
-	unsigned long sleepTimeout = getSleepTimeout_(success, SLEEP_TIME);
+	unsigned long sleepTimeout = getSleepTimeout_(success, minWait);
 
     digitalWrite(MY_LED, HIGH);
-
+ 
     if (not alwaysBoostOn_)
       powerManager_->turnBoosterOff();
 

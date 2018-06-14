@@ -39,7 +39,7 @@ class DS18B20Sensor: public MyMySensor
     sensor_.requestTemperatures();
     return sensor_.millisToWaitForConversion(sensor_.getResolution());
   }
-  void update_() override {
+  unsigned long update_() override {
     auto temp = sensor_.getTempCByIndex(0);
 #ifdef MY_MY_DEBUG
     auto devCount = sensor_.getDeviceCount();
@@ -48,6 +48,7 @@ class DS18B20Sensor: public MyMySensor
 #endif
     temperature_.update(temp);
     power(LOW);
+    return SLEEP_TIME;
   }
 public:
   DS18B20Sensor(uint8_t tempSensorId, uint8_t dataPin, float tempTreshold = 0, uint8_t powerPin = -1)

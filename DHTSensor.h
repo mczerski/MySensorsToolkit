@@ -19,10 +19,11 @@ class DHTSensor: public MyMySensor
   unsigned long preUpdate_() override {
     return dhtSensor_.getMinimumSamplingPeriod();
   }
-  void update_() override {
+  unsigned long update_() override {
     dhtSensor_.readSensor(true);
     humidity_.update(dhtSensor_.getHumidity());
     temperature_.update(dhtSensor_.getTemperature());
+    return SLEEP_TIME;
   }
 public:
   DHTSensor(uint8_t humSensorId, uint8_t tempSensorId, uint8_t dataPin, float humTreshold = 0, float tempTreshold = 0)

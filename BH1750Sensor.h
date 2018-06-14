@@ -18,8 +18,9 @@ class BH1750Sensor: public MyMySensor
     lightSensor_.configure(BH1750_ONE_TIME_HIGH_RES_MODE);
     return 120;
   }
-  void update_() override {
+  unsigned long update_() override {
     luminance_.update(lightSensor_.readLightLevel());
+    return SLEEP_TIME;
   }
 public:
   BH1750Sensor(uint8_t sensorId, uint16_t treshold = 0)
