@@ -75,8 +75,10 @@ class MyAPDS9930 {
     #endif
     (void)status;
   }
-  void update_(uint8_t i) {
+  bool update_(uint8_t i) {
     pcaSelect_(i);
+    if (apds_[i].getProximityInt() == 0)
+      return false;
     uint16_t proximity_data = 0;
     #ifdef MY_MY_DEBUG
     Serial.print("Reading sensor #");
@@ -99,6 +101,7 @@ class MyAPDS9930 {
         #endif
       }
     }
+    return true;
   }
 
 public:
@@ -109,11 +112,14 @@ public:
       init_(i);
   }
   void update() {
-    apdsInts_ = pcaGet_();
-    if (apdsInts_) {
+    uint8_t pca = pcaGet_();
+    apdsInts_ &= pca;
+    if (pca) {
       for (uint8_t i=0; i<APDS9930_NUM; i++) {
-        if (apdsInts_ & (1 << i)) {
-          update_(i);
+        if (pca & (1 << i)) {
+          if (update_(i)) {
+            apdsInts_ |= (1 << i);
+          }
         }
       }
     }
