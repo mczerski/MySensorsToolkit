@@ -105,11 +105,6 @@ class MyMySensorsBase
   static bool loopCalled_;
   static SoftTimer timer_;
 
-  static boolean heartbeatCb(EventBase*) {
-    sendHeartbeat();
-    return false;
-  }
-
 public:
   MyMySensorsBase(uint8_t sensorId, uint8_t sensorType)
     : sensorId_(sensorId), sensorType_(sensorType)
@@ -118,7 +113,6 @@ public:
       sensors_[sensorsCount_++] = this;
   }
   static void begin() {
-    timer_.every(MyDuration(60000).get(), &MyMySensorsBase::heartbeatCb, MyDuration(60000).get());
     for (size_t i=0; i<sensorsCount_; i++)
       sensors_[i]->begin_();
   }
