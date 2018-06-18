@@ -108,6 +108,101 @@ public:
   }
 };
 
+class MyParameterBase {
+protected:
+  MyMessage msg_;
+  uint8_t sensorId_;
+  uint8_t sensorType_;
+  uint8_t parameterPoition_;
+  static uint8_t parametersCount_;
+  static constexpr uint8_t MAX_PARAMETERS = 10;
+  static MyParameterBase* parameters_[MAX_PARAMETERS];
+  static uint8_t globalParameterPoition_;
+
+  void present_() {
+    ::present(sensorId_, sensorType_);
+  }
+  virtual void set_(const MyMessage &message) = 0;
+
+public:
+  MyParameterBase(uint8_t sensorId, uint8_t type, uint8_t sensorType)
+    : msg_(sensorId+100, type), sensorId_(sensorId+100), sensorType_(sensorType)
+  {
+    parameterPoition_ = globalParameterPoition_;
+    if (parametersCount_ < MAX_PARAMETERS)
+      parameters_[parametersCount_++] = this;
+  }
+  static void present() {
+    for (size_t i=0; i<parametersCount_; i++)
+      parameters_[i]->present_();
+  }
+  static void receive(const MyMessage &message) {
+    for (size_t i=0; i<parametersCount_; i++) {
+      if (parameters_[i]->sensorId_ == message.sensor) {
+        if (message.isAck()) {
+          return;
+        }
+        if (parameters_[i]->msg_.type == message.type) {
+          if (message.getCommand() == C_REQ) {
+            ::send(parameters_[i]->msg_);
+          }
+          else if (message.getCommand() == C_SET) {
+            parameters_[i]->set_(message);
+          }
+        }
+      }
+    }
+  }
+};
+
+uint8_t MyParameterBase::parametersCount_ = 0;
+MyParameterBase* MyParameterBase::parameters_[];
+uint8_t MyParameterBase::globalParameterPoition_ = 0;
+
+template <typename ValueType>
+class MyParameter : public MyParameterBase {
+  static constexpr ValueType erasedValue = static_cast<ValueType>(0xffffffff);
+
+  void save_(ValueType value) {
+    uint32_t tmp = value;
+    for (uint8_t i=0; i<sizeof(ValueType); i++) {
+      saveState(parameterPoition_ + i, (tmp >> i) & 0xff);
+    }
+  }
+
+  ValueType load_() {
+    uint32_t tmp = 0;
+    for (uint8_t i=0; i<sizeof(ValueType); i++) {
+      tmp |= (static_cast<uint32_t>(loadState(parameterPoition_ + i)) << i);
+    }
+    return ValueType(tmp);
+  }
+
+  void set_(const MyMessage &message) override {
+    auto value = getMessageValue_<ValueType>(message);
+    if (value == erasedValue) 
+      return;
+    save_(value);
+    setMessageValue_(msg_, value);
+  }
+public:
+  MyParameter(uint8_t sensorId, uint8_t type, uint8_t sensorType, ValueType init = 0)
+    : MyParameterBase(sensorId, type, sensorType)
+  {
+    static_assert(sizeof(ValueType) <= sizeof(uint32_t), "MyParameter may be instantiated only with types not grater than 32 bits");
+    globalParameterPoition_ += sizeof(ValueType);
+    ValueType eeprom = load_();
+    if (eeprom == erasedValue)
+      save_(init);
+    else
+      init = eeprom;
+    setMessageValue_(msg_, init);
+  }
+  ValueType get() {
+    return getMessageValue_<ValueType>(msg_);
+  }
+};
+
 class MyMySensor {
   static constexpr uint8_t MAX_SENSORS = 10;
   static uint8_t sensorsCount_;
@@ -165,6 +260,7 @@ public:
 
   static void present() {
     MyValueBase::present();
+    MyParameterBase::present();
   }
   static void begin(uint8_t batteryPin = -1, bool liIonBattery = false, uint8_t powerBoostPin = -1,  bool initialBoostOn = false, bool alwaysBoostOn = false, uint8_t buttonPin = INTERRUPT_NOT_DEFINED) {
     alwaysBoostOn_ = alwaysBoostOn;
@@ -216,9 +312,9 @@ public:
 
     int wakeUpCause;
     if (buttonPin_ == INTERRUPT_NOT_DEFINED)
-      wakeUpCause = sleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+      wakeUpCause = smartSleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
     else
-      wakeUpCause = sleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+      wakeUpCause = smartSleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
 
     if (buttonPin_ != INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(buttonPin_)) {
       digitalWrite(MY_LED, LOW);
@@ -233,6 +329,9 @@ public:
       Serial.println("Wake up from sensor");
       #endif
     }
+  }
+  static void receive(const MyMessage &message) {
+    MyParameterBase::receive(message);
   }
 
 };

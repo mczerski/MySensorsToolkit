@@ -19,6 +19,46 @@ void setMessageValue_(MyMessage &msg, float value) {
   msg.set(value, 1);
 }
 
+template<typename ValueType>
+ValueType getMessageValue_(const MyMessage &msg) {
+  return ValueType();
+}
+
+template <>
+bool getMessageValue_<bool>(const MyMessage &msg) {
+  return msg.getBool();
+}
+
+template <>
+uint8_t getMessageValue_<uint8_t>(const MyMessage &msg) {
+  return msg.getByte();
+}
+
+template <>
+float getMessageValue_<float>(const MyMessage &msg) {
+  return msg.getFloat();
+}
+
+template <>
+int16_t getMessageValue_<int16_t>(const MyMessage &msg) {
+  return msg.getInt();
+}
+
+template <>
+uint16_t getMessageValue_<uint16_t>(const MyMessage &msg) {
+  return msg.getUInt();
+}
+
+template <>
+int32_t getMessageValue_<int32_t>(const MyMessage &msg) {
+  return msg.getLong();
+}
+
+template <>
+uint32_t getMessageValue_<uint32_t>(const MyMessage &msg) {
+  return msg.getULong();
+}
+
 void checkTransport() {
   for (int i=0; i<20; i++) {
     if (isTransportReady())
