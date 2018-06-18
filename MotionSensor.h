@@ -13,10 +13,10 @@ class MotionSensor: public MyMySensor
     MOTION_LOW,
     NO_MOTION
   };
-  static const unsigned long TRIGGER_DELAY = 30000 - 2000;
   uint8_t pin_;
   State state_;
   MyValue<uint16_t> tripped_;
+  MyParameter<uint8_t> triggerDelay_;
   void begin_() override {
     pinMode(pin_, INPUT);
   }
@@ -32,7 +32,7 @@ class MotionSensor: public MyMySensor
       if (not motion) {
         state_ = MOTION_LOW;
         motion = true;
-        wait = TRIGGER_DELAY;
+        wait = 1000l*triggerDelay_.get() - 2300l;
       }
     }
     else if (state_ == MOTION_LOW) {
@@ -48,7 +48,7 @@ class MotionSensor: public MyMySensor
   }
 public:
   MotionSensor(uint8_t sensorId, uint8_t pin)
-    : pin_(pin), state_(NO_MOTION), tripped_(sensorId, V_TRIPPED, S_MOTION)
+    : pin_(pin), state_(NO_MOTION), tripped_(sensorId, V_TRIPPED, S_MOTION), triggerDelay_(sensorId, V_VAR1, S_CUSTOM, 30)
   {
     requestInterrupt(pin_, CHANGE);
   }
