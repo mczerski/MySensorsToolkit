@@ -16,6 +16,7 @@ protected:
   static constexpr uint8_t MAX_VALUES = 10;
   static MyValueBase* values_[MAX_VALUES];
   static bool success_;
+  static bool somethingSent_;
 
   void present_() {
     ::present(sensorId_, sensorType_);
@@ -41,26 +42,40 @@ public:
   }
   static void beforeUpdate() {
     success_ = true;
+    somethingSent_ = false;
   }
-  static void update(bool success) {
+  static void update(bool success, bool somethingSent) {
     success_ &= success;
+    somethingSent_ |= somethingSent;
   }
-  static bool afterUpdate() {
+  static bool wasSuccess() {
     return success_;
+  }
+  static bool wasSomethingSent() {
+    return somethingSent_;
   }
 };
 
 uint8_t MyValueBase::valuesCount_ = 0;
 MyValueBase* MyValueBase::values_[];
 bool MyValueBase::success_ = true;
+bool MyValueBase::somethingSent_ = false;
 
 template <typename ValueType>
 class MyValue : public MyValueBase {
   ValueType lastValue_;
   ValueType treshold_;
 
-  bool handleValue_(ValueType value) {
+  bool sendMessage_(ValueType value) {
+    setMessageValue_(msg_, value);
+    return send(msg_, true) and wait(2000, C_SET, msg_.type);
+  }
+public:
+  MyValue(uint8_t sensorId, uint8_t type, uint8_t sensorType, ValueType treshold = 0)
+    : MyValueBase(sensorId, type, sensorType), lastValue_(-1), treshold_(treshold)  {}
+  void update(ValueType value) {
     bool success = true;
+    bool somethingSent = false;
 
     if (abs(lastValue_ - value) > treshold_ || noUpdates_ == FORCE_UPDATE_N_READS) {
       #ifdef MY_MY_DEBUG
@@ -80,6 +95,7 @@ class MyValue : public MyValueBase {
       success = sendMessage_(value);
       if (success) {
         noUpdates_ = 0;
+        somethingSent = true;
       }
       else {
         noUpdates_ = FORCE_UPDATE_N_READS;
@@ -94,17 +110,7 @@ class MyValue : public MyValueBase {
     } else {
       noUpdates_++;
     }
-    return success;
-  }
-  bool sendMessage_(ValueType value) {
-    setMessageValue_(msg_, value);
-    return send(msg_, true) and wait(2000, C_SET, msg_.type);
-  }
-public:
-  MyValue(uint8_t sensorId, uint8_t type, uint8_t sensorType, ValueType treshold = 0)
-    : MyValueBase(sensorId, type, sensorType), lastValue_(-1), treshold_(treshold)  {}
-  void update(ValueType value) {
-    MyValueBase::update(handleValue_(value));
+    MyValueBase::update(success, somethingSent);
   }
 };
 
@@ -300,7 +306,7 @@ public:
       auto wait = sensors_[i]->update_();
       minWait = min(minWait, wait);
     }
-    bool success = MyValueBase::afterUpdate();
+    bool success = MyValueBase::wasSuccess();
 
 	powerManager_->reportBatteryLevel();
 	unsigned long sleepTimeout = getSleepTimeout_(success, minWait);
@@ -311,10 +317,18 @@ public:
       powerManager_->turnBoosterOff();
 
     int wakeUpCause;
-    if (buttonPin_ == INTERRUPT_NOT_DEFINED)
-      wakeUpCause = smartSleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
-    else
-      wakeUpCause = smartSleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+    if (MyValueBase::wasSomethingSent()) {
+      if (buttonPin_ == INTERRUPT_NOT_DEFINED)
+        wakeUpCause = smartSleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+      else
+        wakeUpCause = smartSleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+    }
+    else {
+      if (buttonPin_ == INTERRUPT_NOT_DEFINED)
+        wakeUpCause = sleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+      else
+        wakeUpCause = sleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+    }
 
     if (buttonPin_ != INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(buttonPin_)) {
       digitalWrite(MY_LED, LOW);
