@@ -46,9 +46,14 @@ class DS18B20Sensor: public MyMySensor
     Serial.print("DS18B20: temp: ");
     Serial.println(temp);
 #endif
-    temperature_.update(temp);
     power(LOW);
-    return SLEEP_TIME;
+    if (temp == DEVICE_DISCONNECTED_C) {
+      return 2000;
+    }
+    else {
+      temperature_.update(temp);
+      return SLEEP_TIME;
+    }
   }
 public:
   DS18B20Sensor(uint8_t tempSensorId, uint8_t dataPin, float tempTreshold = 0, uint8_t powerPin = -1)
