@@ -1,12 +1,12 @@
-#ifndef MySceneController_h
-#define MySceneController_h
+#ifndef SceneController_h
+#define SceneController_h
 
-#include "MyMySensorsBase.h"
+#include "ActuatorBase.h"
 #include "Switch.h"
 
-namespace mymysensors {
+namespace mys_toolkit {
 
-class MySceneController : public MyMySensorsBase
+class SceneController : public ActuatorBase
 {
   enum State {
     WAITING_FOR_RISING,
@@ -15,15 +15,15 @@ class MySceneController : public MyMySensorsBase
   };
   State state_;
   bool prevSwState_;
-  MyDuration lastSwRiseTime_;
+  Duration lastSwRiseTime_;
   Switch &sw_;
-  MyMyMessage sceneMsg_;
+  Message sceneMsg_;
   bool enableShortPress_;
   bool isRising_(bool swState) {
     return swState == true and prevSwState_ == false;
   }
   bool isHeldLongEnough_(bool swState) {
-    return swState == true and prevSwState_ == true and lastSwRiseTime_ + MyDuration(1000) < MyDuration();
+    return swState == true and prevSwState_ == true and lastSwRiseTime_ + Duration(1000) < Duration();
   }
   bool isFalling(bool swState) {
     return swState == false and prevSwState_ == true;
@@ -40,7 +40,7 @@ class MySceneController : public MyMySensorsBase
   void update_() override {
     bool currSwState = sw_.update();
     if (isRising_(currSwState)) {
-      lastSwRiseTime_ = MyDuration();
+      lastSwRiseTime_ = Duration();
       state_ = WAITING_FOR_SCENE;
     }
     else if (state_ == WAITING_FOR_SCENE and isHeldLongEnough_(currSwState)) {
@@ -58,8 +58,8 @@ class MySceneController : public MyMySensorsBase
     prevSwState_ = currSwState;
   }
 public:
-  MySceneController(uint8_t sensorId, Switch &sw, bool enableShortPress=true)
-    : MyMySensorsBase(sensorId, S_SCENE_CONTROLLER),
+  SceneController(uint8_t sensorId, Switch &sw, bool enableShortPress=true)
+    : ActuatorBase(sensorId, S_SCENE_CONTROLLER),
       state_(WAITING_FOR_RISING),
       prevSwState_(false),
       sw_(sw),
@@ -67,7 +67,7 @@ public:
       enableShortPress_(enableShortPress) {}
 };
 
-} // mymysensors
+} //mys_toolkit
 
-#endif //MySceneController_h
+#endif //SceneController_h
 

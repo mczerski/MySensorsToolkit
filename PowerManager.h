@@ -1,71 +1,9 @@
-#ifndef MyMySensors_h
-#define MyMySensors_h
+#ifndef PowerManager_h
+#define PowerManager_h
 
 #include <MySensors.h>
-#include <math.h>
 
-namespace mymysensors {
-
-static const uint8_t FORCE_UPDATE_N_READS = 10;
-static const int BATTERY_LEVEL_TRESHOLD = 5;
-
-template <typename ValueType>
-void setMessageValue_(MyMessage &msg, ValueType value) {
-  msg.set(value);
-}
-
-template <>
-void setMessageValue_(MyMessage &msg, float value) {
-  msg.set(value, 1);
-}
-
-template<typename ValueType>
-ValueType getMessageValue_(const MyMessage &msg) {
-  return ValueType();
-}
-
-template <>
-bool getMessageValue_<bool>(const MyMessage &msg) {
-  return msg.getBool();
-}
-
-template <>
-uint8_t getMessageValue_<uint8_t>(const MyMessage &msg) {
-  return msg.getByte();
-}
-
-template <>
-float getMessageValue_<float>(const MyMessage &msg) {
-  return msg.getFloat();
-}
-
-template <>
-int16_t getMessageValue_<int16_t>(const MyMessage &msg) {
-  return msg.getInt();
-}
-
-template <>
-uint16_t getMessageValue_<uint16_t>(const MyMessage &msg) {
-  return msg.getUInt();
-}
-
-template <>
-int32_t getMessageValue_<int32_t>(const MyMessage &msg) {
-  return msg.getLong();
-}
-
-template <>
-uint32_t getMessageValue_<uint32_t>(const MyMessage &msg) {
-  return msg.getULong();
-}
-
-void checkTransport() {
-  for (int i=0; i<20; i++) {
-    if (isTransportReady())
-      break;
-    wait(500); // transport is not operational, allow the transport layer to fix this
-  }
-}
+namespace mys_toolkit {
 
 int convert2mV(int v) {
   int voltage_mV = v * 1.1 * 1.1 * 1000 * 10 / 1024; //includes 1/11 divider
@@ -98,6 +36,8 @@ uint8_t convertmV2Level(int v, bool liIonBattery) {
 }
 
 class PowerManager {
+  static constexpr uint8_t FORCE_UPDATE_N_READS = 10;
+  static constexpr int BATTERY_LEVEL_TRESHOLD = 5;
   uint8_t powerBoostPin_ = -1;
   uint8_t batteryPin_ = -1;
   uint8_t lastBatteryLevel_ = -1;
@@ -153,6 +93,7 @@ public:
 
 PowerManager PowerManager::instance_;
 
-} // mymysensors
 
-#endif //MyMySensors_h
+} //mys_toolkit
+
+#endif //PowerManager_h

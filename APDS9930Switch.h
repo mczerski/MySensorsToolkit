@@ -6,7 +6,7 @@
 #include <APDS9930.h>
 #include <Wire.h>
 
-namespace mymysensors {
+namespace mys_toolkit {
 
 class MyAPDS9930 {
   uint8_t intPin_;
@@ -139,6 +139,6 @@ public:
   APDS9930Switch(const MyAPDS9930 &myApds, uint8_t apdsNo) : Switch(false), myApds_(myApds), apdsNo_(apdsNo) {}
 };
 
-} // mymysensors
+} //mys_toolkit
 
 #endif //APDS9930Switch_h

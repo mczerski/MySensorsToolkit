@@ -1,28 +1,27 @@
 #ifndef MotionSensor_h
 #define MotionSensor_h
 
-#include "MyMySensor.h"
+#include "SensorBase.h"
 
-namespace mymysensors {
+namespace mys_toolkit {
 
-
-class MotionSensor: public MyMySensor
+class MotionSensor: public SensorBase
 {
   enum State {
     MOTION_HIGH,
     MOTION_LOW,
     NO_MOTION
   };
+  static const unsigned long TRIGGER_DELAY = 30000 - 2000;
   uint8_t pin_;
   State state_;
-  MyValue<uint16_t> tripped_;
-  MyParameter<uint8_t> triggerDelay_;
+  SensorValue<uint16_t> tripped_;
   void begin_() override {
     pinMode(pin_, INPUT);
   }
   unsigned long update_() override {
     bool motion = digitalRead(pin_);
-    unsigned long wait = SLEEP_TIME;
+    unsigned long wait = -1;
     if (state_ == NO_MOTION) {
       if (motion) {
         state_ = MOTION_HIGH;
@@ -32,7 +31,7 @@ class MotionSensor: public MyMySensor
       if (not motion) {
         state_ = MOTION_LOW;
         motion = true;
-        wait = 1000l*triggerDelay_.get() - 2300l;
+        wait = TRIGGER_DELAY;
       }
     }
     else if (state_ == MOTION_LOW) {
@@ -48,12 +47,12 @@ class MotionSensor: public MyMySensor
   }
 public:
   MotionSensor(uint8_t sensorId, uint8_t pin)
-    : pin_(pin), state_(NO_MOTION), tripped_(sensorId, V_TRIPPED, S_MOTION), triggerDelay_(sensorId, V_VAR1, S_CUSTOM, 30)
+    : pin_(pin), state_(NO_MOTION), tripped_(sensorId, V_TRIPPED, S_MOTION)
   {
     requestInterrupt(pin_, CHANGE);
   }
 };
 
-} // mymysensors
+} //
 
 #endif //MotionSensor_h

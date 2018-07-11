@@ -1,7 +1,7 @@
 #ifndef array_h
 #define array_h
 
-namespace mymysensors {
+namespace mys_toolkit {
 
 template <typename T, size_t N>
 struct array {
@@ -18,6 +18,6 @@ struct array {
   }
 };
 
-} // mymysensors
+} //mys_toolkit
 
 #endif //array_h

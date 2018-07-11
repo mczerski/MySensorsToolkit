@@ -1,18 +1,18 @@
-#ifndef MyDimmerSwitch_h
-#define MyDimmerSwitch_h
+#ifndef DimmerActuator_h
+#define DimmerActuator_h
 
-#include "MyMySensorsBase.h"
+#include "ActuatorBase.h"
 #include "Dimmer.h"
 #include "Switch.h"
 
-namespace mymysensors {
+namespace mys_toolkit {
 
-class MyDimmerSwitch : public MyMySensorsBase
+class DimmerActuator : public ActuatorBase
 {
   Dimmer &dim_;
   Switch &sw_;
-  MyMyMessage dimmerMsg_;
-  MyMyMessage lightMsg_;
+  Message dimmerMsg_;
+  Message lightMsg_;
   static uint8_t fromPercentage_(uint8_t percentage) {
     return uint8_t(round(255.0*percentage/100));
   }
@@ -67,8 +67,8 @@ class MyDimmerSwitch : public MyMySensorsBase
     }
   }
 public:
-  MyDimmerSwitch(uint8_t sensorId, Dimmer &dim, Switch &sw)
-    : MyMySensorsBase(sensorId, S_DIMMER),
+  DimmerActuator(uint8_t sensorId, Dimmer &dim, Switch &sw)
+    : ActuatorBase(sensorId, S_DIMMER),
       dim_(dim),
       sw_(sw),
       dimmerMsg_(sensorId, V_DIMMER),
@@ -76,6 +76,6 @@ public:
   {}
 };
 
-} // mymysensors
+} //mys_toolkit
 
-#endif //MyDimmerSwitch_h
+#endif //DimmerActuator_h

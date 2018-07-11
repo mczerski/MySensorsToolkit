@@ -1,9 +1,9 @@
 #ifndef Relay_h
 #define Relay_h
 
-#include "MyMySensorsBase.h"
+#include "SensorBasesBase.h"
 
-namespace mymysensors {
+namespace mys_toolkit {
 
 class Relay
 {
@@ -43,6 +43,6 @@ public:
   }
 };
 
-} // mymysensors
+} //mys_toolkit
 
 #endif //Relay_h

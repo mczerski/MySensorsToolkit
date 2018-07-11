@@ -1,19 +1,18 @@
 #ifndef DS18B20Sensor_h
 #define DS18B20Sensor_h
 
-#include "MyMySensor.h"
+#include "SensorBase.h"
 #include <DallasTemperature.h>
 #include <OneWire.h>
 
-namespace mymysensors {
+namespace mys_toolkit {
 
-
-class DS18B20Sensor: public MyMySensor
+class DS18B20Sensor: public SensorBase
 {
   OneWire oneWire_;
   DallasTemperature sensor_;
   uint8_t powerPin_;
-  MyValue<float> temperature_;
+  SensorValue<float> temperature_;
   void power(uint8_t value) {
     if (powerPin_ != uint8_t(-1))
       digitalWrite(powerPin_, value);
@@ -46,14 +45,9 @@ class DS18B20Sensor: public MyMySensor
     Serial.print("DS18B20: temp: ");
     Serial.println(temp);
 #endif
+    temperature_.update(temp);
     power(LOW);
-    if (temp == DEVICE_DISCONNECTED_C) {
-      return 2000;
-    }
-    else {
-      temperature_.update(temp);
-      return SLEEP_TIME;
-    }
+    return SLEEP_TIME;
   }
 public:
   DS18B20Sensor(uint8_t tempSensorId, uint8_t dataPin, float tempTreshold = 0, uint8_t powerPin = -1)
@@ -63,6 +57,6 @@ public:
       temperature_(tempSensorId, V_TEMP, S_TEMP, tempTreshold) {}
 };
 
-} // mymysensors
+} //mys_toolkit
 
 #endif //DS18B20Sensor_h

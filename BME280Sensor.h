@@ -1,17 +1,17 @@
 #ifndef BME280Sensor_h
 #define BME280Sensor_h
 
-#include "MyMySensor.h"
+#include "SensorBase.h"
 #include <BME280I2C.h>
 
-namespace mymysensors {
+namespace mys_toolkit {
 
 
-class BME280Sensor: public MyMySensor
+class BME280Sensor: public SensorBase
 {
   BME280I2C bmeSensor_;
-  MyValue<float> humidity_;
-  MyValue<float> temperature_;
+  SensorValue<float> humidity_;
+  SensorValue<float> temperature_;
   void begin_() override {
     if(!bmeSensor_.begin()){
       #ifdef MY_MY_DEBUG
@@ -35,6 +35,6 @@ public:
       temperature_(tempSensorId, V_TEMP, S_TEMP, tempTreshold) {}
 };
 
-} // mymysensors
+} //mys_toolkit
 
 #endif //BME280Sensor_h

@@ -1,7 +1,7 @@
 #ifndef Switch_h
 #define Switch_h
 
-namespace mymysensors {
+namespace mys_toolkit {
 
 class Switch {
   uint8_t activeLow_;
@@ -14,6 +14,6 @@ public:
   }
 };
 
-} // mymysensors
+} //mys_toolkit
 
 #endif //Switch_h

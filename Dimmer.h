@@ -3,7 +3,7 @@
 
 #include "array.h"
 
-namespace mymysensors {
+namespace mys_toolkit {
 
 struct Functions {
   uint8_t slowDimming : 1;
@@ -24,26 +24,26 @@ class Dimmer {
   uint8_t currentLevel_;
   uint8_t requestedLevel_;
   uint8_t lastLevel_;
-  MyDuration nextChangeTime_;
+  Duration nextChangeTime_;
   bool inverted_;
-  MyDuration lastPinRiseTime_;
+  Duration lastPinRiseTime_;
   uint8_t dimmSpeed_;
   static constexpr uint8_t maxDimmSpeed_ = 20;
   Functions functions_;
 
-  MyDuration fadeDelay_()
+  Duration fadeDelay_()
   {
     auto delayFactor = maxDimmSpeed_ - dimmSpeed_ + 1;
     if (currentLevel_ < 1*delayFactor)
-      return MyDuration(25);
+      return Duration(25);
     else if (currentLevel_ < 2*delayFactor)
-      return MyDuration(25);
+      return Duration(25);
     else if (currentLevel_ < 5*delayFactor)
-      return MyDuration(10);
+      return Duration(10);
     else if (currentLevel_ < 10*delayFactor)
-      return MyDuration(5);
+      return Duration(5);
     else
-      return MyDuration(3);
+      return Duration(3);
   }
 
   virtual void setLevel_(uint8_t level) = 0;
@@ -51,12 +51,12 @@ class Dimmer {
   bool updateLevel_() {
     if (isInIdleState_())
       return false;
-    MyDuration currentTime;
+    Duration currentTime;
     if (currentTime < nextChangeTime_)
       return false;
     handleDimming_();
     setLevel_(currentLevel_);
-    MyDuration fadeDelay = fadeDelay_();
+    Duration fadeDelay = fadeDelay_();
     if (isInSlowDimming_())
       fadeDelay *= 3;
     nextChangeTime_ += fadeDelay;
@@ -108,7 +108,7 @@ class Dimmer {
   }
 
   bool isHeldLongEnough_(bool pinValue) {
-    return pinValue == true and lastPinValue_ == true and lastPinRiseTime_ + MyDuration(2000) < MyDuration();
+    return pinValue == true and lastPinValue_ == true and lastPinRiseTime_ + Duration(2000) < Duration();
   }
 
   bool isFalling(bool pinValue) {
@@ -116,7 +116,7 @@ class Dimmer {
   }
 
   bool isLongPress() {
-    return lastPinRiseTime_ + MyDuration(500) < MyDuration();
+    return lastPinRiseTime_ + Duration(500) < Duration();
   }
 
   bool isInSlowDimming_() {
@@ -128,7 +128,7 @@ class Dimmer {
   }
 
   void triggerLevelChange_() {
-    nextChangeTime_ = MyDuration();
+    nextChangeTime_ = Duration();
   }
 
   void startSlowDimming_() {
@@ -170,7 +170,7 @@ public:
       if (not functions_.slowDimming and not functions_.fullBrightness)
         set(state_ == OFF);
       else
-        lastPinRiseTime_ = MyDuration();
+        lastPinRiseTime_ = Duration();
     }
     else if (isHeldLongEnough_(value)) {
       if (not isInSlowDimming_() and functions_.slowDimming) {
@@ -270,6 +270,6 @@ public:
 
 using SimpleDimmer = SimpleDimmerN<1>;
 
-} // mymysensors
+} //mys_toolkit
 
 #endif //Dimmer_h

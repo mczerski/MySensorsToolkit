@@ -1,17 +1,17 @@
-#ifndef MyRelaySwitch_h
-#define MyRelaySwitch_h
+#ifndef RelayActuator_h
+#define RelayActuator_h
 
-#include "MyMySensorsBase.h"
+#include "ActuatorBase.h"
 #include "Relay.h"
 #include "Switch.h"
 
-namespace mymysensors {
+namespace mys_toolkit {
 
-class MyRelaySwitch : public MyMySensorsBase
+class RelayActuator : public ActuatorBase
 {
   Relay &relay_;
   Switch &sw_;
-  MyMyMessage lightMsg_;
+  Message lightMsg_;
   void sendCurrentState_() {
     lightMsg_.send(relay_.getState());
     #ifdef MY_MY_DEBUG
@@ -51,8 +51,8 @@ class MyRelaySwitch : public MyMySensorsBase
     }
   }
 public:
-  MyRelaySwitch(uint8_t sensorId, Relay &relay, Switch &sw)
-    : MyMySensorsBase(sensorId, S_BINARY),
+  RelayActuator(uint8_t sensorId, Relay &relay, Switch &sw)
+    : SensorBasesBase(sensorId, S_BINARY),
       relay_(relay),
       sw_(sw),
       lightMsg_(sensorId, V_STATUS)
@@ -60,6 +60,6 @@ public:
   }
 };
 
-} // mymysensors
+} //mys_toolkit
 
-#endif //MyRelaySwitch_h
+#endif //RelayActuator_h

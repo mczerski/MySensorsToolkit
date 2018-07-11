@@ -1,23 +1,23 @@
 #ifndef MyRequestingValue_h
 #define MyRequestingValue_h
 
-#include "MyMySensorsBase.h"
+#include "SensorBasesBase.h"
 
-namespace mymysensors {
+namespace mys_toolkit {
 
 template <typename ValueType>
-class MyRequestingValue : public EventBase, public MyMySensorsBase
+class MyRequestingValue : public EventBase, public SensorBasesBase
 {
-  MyMyMessage msg_;
+  Message msg_;
   uint8_t childId_;
   uint8_t sensorType_;
   ValueType value_;
-  MyDuration interval_;
-  void scheduleEvent(boolean (*cb)(EventBase*), MyDuration delayMs)
+  Duration interval_;
+  void scheduleEvent(boolean (*cb)(EventBase*), Duration delayMs)
   {
     this->period = 0;
     this->repeatCount = 1;
-    MyDuration nextTriggerTime;
+    Duration nextTriggerTime;
     nextTriggerTime += delayMs;
     this->nextTriggerTime = nextTriggerTime.get();
     this->callback = cb;
@@ -39,7 +39,7 @@ class MyRequestingValue : public EventBase, public MyMySensorsBase
   static boolean startMeasurement_(EventBase* event)
   {
     MyRequestingValue* myRequestingValue = static_cast<MyRequestingValue*>(event);
-    MyDuration conversionTime = myRequestingValue->startMeasurementCb_();
+    Duration conversionTime = myRequestingValue->startMeasurementCb_();
     #ifdef MY_MY_DEBUG
     Serial.print("startMeasurement conversionTime: ");
     Serial.println(conversionTime.getMilis());
@@ -49,7 +49,7 @@ class MyRequestingValue : public EventBase, public MyMySensorsBase
   }
   virtual void begin2_() {}
   void begin_() override {
-    scheduleEvent(startMeasurement_, MyDuration(0));
+    scheduleEvent(startMeasurement_, Duration(0));
     begin2_();
   }
   void receive_(const MyMessage &message) override {
@@ -57,16 +57,16 @@ class MyRequestingValue : public EventBase, public MyMySensorsBase
       msg_.send(value_);
   }
   virtual ValueType readValueCb_() = 0;
-  virtual MyDuration startMeasurementCb_() = 0;
+  virtual Duration startMeasurementCb_() = 0;
 
 public:
-  MyRequestingValue(uint8_t sensorId, uint8_t type, uint8_t sensorType, MyDuration interval)
-    : MyMySensorsBase(sensorId, sensorType),
+  MyRequestingValue(uint8_t sensorId, uint8_t type, uint8_t sensorType, Duration interval)
+    : SensorBasesBase(sensorId, sensorType),
       msg_(sensorId, type),
       interval_(interval)
   {}
 };
 
-} // mymysensors
+} //mys_toolkit
 
 #endif //MyRequestingValue_h

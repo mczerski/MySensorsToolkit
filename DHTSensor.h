@@ -1,18 +1,17 @@
 #ifndef DHTSensor_h
 #define DHTSensor_h
 
-#include "MyMySensor.h"
+#include "SensorBase.h"
 #include <DHT.h>
 
-namespace mymysensors {
+namespace mys_toolkit {
 
-
-class DHTSensor: public MyMySensor
+class DHTSensor: public SensorBase
 {
   DHT dhtSensor_;
   uint8_t dataPin_;
-  MyValue<float> humidity_;
-  MyValue<float> temperature_;
+  SensorValue<float> humidity_;
+  SensorValue<float> temperature_;
   void begin_() override {
     dhtSensor_.setup(dataPin_);
   }
@@ -32,6 +31,6 @@ public:
       temperature_(tempSensorId, V_TEMP, S_TEMP, tempTreshold) {}
 };
 
-} // mymysensors
+} //mys_toolkit
 
 #endif //DHTSensor_h
