@@ -2,6 +2,7 @@
 #define SceneController_h
 
 #include "ActuatorBase.h"
+#include "Message.h"
 #include "Switch.h"
 
 namespace mys_toolkit {

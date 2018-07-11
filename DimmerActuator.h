@@ -2,6 +2,7 @@
 #define DimmerActuator_h
 
 #include "ActuatorBase.h"
+#include "Message.h"
 #include "Dimmer.h"
 #include "Switch.h"
 

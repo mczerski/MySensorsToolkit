@@ -1,16 +1,16 @@
 #ifndef MyTemperatureSensor_h
 #define MyTemperatureSensor_h
 
-#include "MyRequestingValue.h"
+#include "RequestableValue.h"
 
 #include <DallasTemperature.h>
 #include <OneWire.h>
 
 namespace mys_toolkit {
 
-class MyTemperatureSensor : public MyRequestingValue<float> {
+class MyTemperatureSensor : public RequestableValue<float> {
 public:
-  MyTemperatureSensor(uint8_t pin, uint8_t sensorId, Duration interval) : MyRequestingValue<float>(sensorId, V_TEMP, S_TEMP, interval), oneWire_(pin), tempSensor_(&oneWire_) {}
+  MyTemperatureSensor(uint8_t pin, uint8_t sensorId, Duration interval) : RequestableValue<float>(sensorId, V_TEMP, S_TEMP, interval), oneWire_(pin), tempSensor_(&oneWire_) {}
 private:
   OneWire oneWire_;
   DallasTemperature tempSensor_;

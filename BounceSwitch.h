@@ -2,6 +2,7 @@
 #define BounceSwitch_h
 
 #include "Switch.h"
+#include "Duration.h"
 
 #include <Bounce2.h>
 

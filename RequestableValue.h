@@ -1,12 +1,12 @@
-#ifndef MyRequestingValue_h
-#define MyRequestingValue_h
+#ifndef RequestableValue_h
+#define RequestableValue_h
 
-#include "SensorBasesBase.h"
+#include "ActuatorBase.h"
 
 namespace mys_toolkit {
 
 template <typename ValueType>
-class MyRequestingValue : public EventBase, public SensorBasesBase
+class RequestableValue : public EventBase, public ActuatorBase
 {
   Message msg_;
   uint8_t childId_;
@@ -25,26 +25,26 @@ class MyRequestingValue : public EventBase, public SensorBasesBase
   }
   static boolean readValue_(EventBase* event)
   {
-    MyRequestingValue* myRequestingValue = static_cast<MyRequestingValue*>(event);
-    myRequestingValue->value_ = myRequestingValue->readValueCb_();
+    RequestableValue* value = static_cast<RequestableValue*>(event);
+    value->value_ = value->readValueCb_();
     #ifdef MY_MY_DEBUG
     Serial.print("readValue: ");
-    Serial.print(myRequestingValue->value_);
+    Serial.print(value->value_);
     Serial.print(" next measurement: ");
-    Serial.println(myRequestingValue->interval_.getMilis());
+    Serial.println(value->interval_.getMilis());
     #endif
-    myRequestingValue->scheduleEvent(MyRequestingValue::startMeasurement_, myRequestingValue->interval_);
+    value->scheduleEvent(RequestableValue::startMeasurement_, value->interval_);
     return true;
   }
   static boolean startMeasurement_(EventBase* event)
   {
-    MyRequestingValue* myRequestingValue = static_cast<MyRequestingValue*>(event);
-    Duration conversionTime = myRequestingValue->startMeasurementCb_();
+    RequestableValue* value = static_cast<RequestableValue*>(event);
+    Duration conversionTime = value->startMeasurementCb_();
     #ifdef MY_MY_DEBUG
     Serial.print("startMeasurement conversionTime: ");
     Serial.println(conversionTime.getMilis());
     #endif
-    myRequestingValue->scheduleEvent(MyRequestingValue::readValue_, conversionTime);
+    value->scheduleEvent(RequestableValue::readValue_, conversionTime);
     return true;
   }
   virtual void begin2_() {}
@@ -60,8 +60,8 @@ class MyRequestingValue : public EventBase, public SensorBasesBase
   virtual Duration startMeasurementCb_() = 0;
 
 public:
-  MyRequestingValue(uint8_t sensorId, uint8_t type, uint8_t sensorType, Duration interval)
-    : SensorBasesBase(sensorId, sensorType),
+  RequestableValue(uint8_t sensorId, uint8_t type, uint8_t sensorType, Duration interval)
+    : ActuatorBase(sensorId, sensorType),
       msg_(sensorId, type),
       interval_(interval)
   {}
@@ -69,4 +69,4 @@ public:
 
 } //mys_toolkit
 
-#endif //MyRequestingValue_h
+#endif //RequestableValue_h
