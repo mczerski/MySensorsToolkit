@@ -4,6 +4,7 @@
 
 #include <SoftTimer.h>
 
+//TODO: move to common place
 extern bool present(const uint8_t sensorId, const uint8_t sensorType,
                     const char *description="", const bool ack=false);
 

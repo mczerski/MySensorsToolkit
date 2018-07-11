@@ -1,6 +1,8 @@
 #ifndef array_h
 #define array_h
 
+#include <stddef.h>
+
 namespace mys_toolkit {
 
 template <typename T, size_t N>

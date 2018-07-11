@@ -1,7 +1,9 @@
 #ifndef SensorValue_h
 #define SensorValue_h
 
-#include <MySensors.h>
+#include "utils.h"
+
+#include <core/MyMessage.h>
 
 namespace mys_toolkit {
 
@@ -17,42 +19,17 @@ protected:
   static SensorValueBase* values_[MAX_VALUES];
   static bool success_;
 
-  void present_() {
-    ::present(sensorId_, sensorType_);
-  }
-  void forceResend_() {
-    noUpdates_ = FORCE_UPDATE_N_READS;
-  }
+  void present_();
+  void forceResend_();
 
 public:
-  SensorValueBase(uint8_t sensorId, uint8_t type, uint8_t sensorType)
-    : msg_(sensorId, type), noUpdates_(0), sensorId_(sensorId), sensorType_(sensorType)
-  {
-    if (valuesCount_ < MAX_VALUES)
-      values_[valuesCount_++] = this;
-  }
-  static void present() {
-    for (size_t i=0; i<valuesCount_; i++)
-      values_[i]->present_();
-  }
-  static void forceResend() {
-    for (size_t i=0; i<valuesCount_; i++)
-      values_[i]->forceResend_();
-  }
-  static void beforeUpdate() {
-    success_ = true;
-  }
-  static void update(bool success) {
-    success_ &= success;
-  }
-  static bool afterUpdate() {
-    return success_;
-  }
+  SensorValueBase(uint8_t sensorId, uint8_t type, uint8_t sensorType);
+  static void present();
+  static void forceResend();
+  static void beforeUpdate();
+  static void update(bool success);
+  static bool afterUpdate();
 };
-
-uint8_t SensorValueBase::valuesCount_ = 0;
-SensorValueBase* SensorValueBase::values_[];
-bool SensorValueBase::success_ = true;
 
 template <typename ValueType>
 class SensorValue : public SensorValueBase {
@@ -98,8 +75,9 @@ class SensorValue : public SensorValueBase {
   }
   bool sendMessage_(ValueType value) {
     setMessageValue(msg_, value);
-    return send(msg_, true) and wait(2000, C_SET, msg_.type);
+    return sendAndWait(msg_, 2000);
   }
+
 public:
   SensorValue(uint8_t sensorId, uint8_t type, uint8_t sensorType, ValueType treshold = 0)
     : SensorValueBase(sensorId, type, sensorType), lastValue_(-1), treshold_(treshold)  {}

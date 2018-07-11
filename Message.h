@@ -15,6 +15,7 @@ enum MessageState {
 
 class Message
 {
+  //TODO: rename
   static constexpr int MAX_MY_MY_MESSAGES = 10;
   MyMessage msg_;
   unsigned long sendTime_ = 0;

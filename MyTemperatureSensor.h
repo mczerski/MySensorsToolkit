@@ -8,23 +8,17 @@
 
 namespace mys_toolkit {
 
+//TODO: rename
 class MyTemperatureSensor : public RequestableValue<float> {
 public:
-  MyTemperatureSensor(uint8_t pin, uint8_t sensorId, Duration interval) : RequestableValue<float>(sensorId, V_TEMP, S_TEMP, interval), oneWire_(pin), tempSensor_(&oneWire_) {}
+  MyTemperatureSensor(uint8_t pin, uint8_t sensorId, Duration interval);
+
 private:
   OneWire oneWire_;
   DallasTemperature tempSensor_;
-  float readValueCb_() override {
-    return tempSensor_.getTempCByIndex(0);
-  }
-  Duration startMeasurementCb_() override {
-    tempSensor_.requestTemperatures();
-    return Duration(tempSensor_.millisToWaitForConversion(tempSensor_.getResolution()));
-  }
-  void begin2_() override {
-    tempSensor_.begin();
-    tempSensor_.setWaitForConversion(false);
-  }
+  float readValueCb_() override;
+  Duration startMeasurementCb_() override;
+  void begin2_() override;
 };
 
 } //mys_toolkit
