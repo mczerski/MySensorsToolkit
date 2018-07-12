@@ -14,6 +14,6 @@ extern int8_t sleep(const uint8_t interrupt1, const uint8_t mode1, const uint8_t
 extern bool isTransportReady();
 
 namespace mys_toolkit {
-  constexpr uint8_t INTERRUPT_NOT_DEFINED = 255;
-  constexpr uint8_t MODE_NOT_DEFINED = 255;
+  constexpr uint8_t MYS_TOOLKIT_INTERRUPT_NOT_DEFINED = 255;
+  constexpr uint8_t MYS_TOOLKIT_MODE_NOT_DEFINED = 255;
 }

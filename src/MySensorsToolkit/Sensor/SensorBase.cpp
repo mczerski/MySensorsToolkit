@@ -39,7 +39,7 @@ static unsigned long SensorBase::getSleepTimeout_(bool success, unsigned long sl
 
 void SensorBase::requestInterrupt(uint8_t pin, uint8_t mode)
 {
-  if (interruptPin_ == INTERRUPT_NOT_DEFINED) {
+  if (interruptPin_ == MYS_TOOLKIT_INTERRUPT_NOT_DEFINED) {
     interruptPin_ = pin;
     interruptMode_ = mode;
   }
@@ -110,19 +110,19 @@ static void SensorBase::update()
     powerManager_->turnBoosterOff();
 
   int wakeUpCause;
-  if (buttonPin_ == INTERRUPT_NOT_DEFINED)
+  if (buttonPin_ == MYS_TOOLKIT_INTERRUPT_NOT_DEFINED)
     wakeUpCause = sleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
   else
     wakeUpCause = sleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
 
-  if (buttonPin_ != INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(buttonPin_)) {
+  if (buttonPin_ != MYS_TOOLKIT_INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(buttonPin_)) {
     digitalWrite(ledPin_, LOW);
     SensorValueBase::forceResend();
     #ifdef MYS_TOOLKIT_DEBUG
     Serial.println("Wake up from button");
     #endif
   }
-  else if (interruptPin_ != INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(interruptPin_)) {
+  else if (interruptPin_ != MYS_TOOLKIT_INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(interruptPin_)) {
     digitalWrite(ledPin_, LOW);
     #ifdef MYS_TOOLKIT_DEBUG
     Serial.println("Wake up from sensor");
@@ -133,10 +133,10 @@ static void SensorBase::update()
 uint8_t SensorBase::sensorsCount_ = 0;
 SensorBase * SensorBase::sensors_[];
 uint8_t SensorBase::consecutiveFails_ = 0;
-uint8_t SensorBase::buttonPin_ = INTERRUPT_NOT_DEFINED;
+uint8_t SensorBase::buttonPin_ = MYS_TOOLKIT_INTERRUPT_NOT_DEFINED;
 uint8_t SensorBase::ledPin_;
-uint8_t SensorBase::interruptPin_ = INTERRUPT_NOT_DEFINED;
-uint8_t SensorBase::interruptMode_ = MODE_NOT_DEFINED;
+uint8_t SensorBase::interruptPin_ = MYS_TOOLKIT_INTERRUPT_NOT_DEFINED;
+uint8_t SensorBase::interruptMode_ = MYS_TOOLKIT_MODE_NOT_DEFINED;
 bool SensorBase::alwaysBoostOn_ = false;
 PowerManager* SensorBase::powerManager_ = nullptr;
 

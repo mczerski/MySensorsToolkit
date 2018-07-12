@@ -38,7 +38,7 @@ public:
   SensorBase();
   static void present();
   static void begin(uint8_t batteryPin = -1, bool liIonBattery = false, uint8_t powerBoostPin = -1,
-                    bool initialBoostOn = false, bool alwaysBoostOn = false, uint8_t buttonPin = INTERRUPT_NOT_DEFINED,
+                    bool initialBoostOn = false, bool alwaysBoostOn = false, uint8_t buttonPin = MYS_TOOLKIT_INTERRUPT_NOT_DEFINED,
                     uint8_t ledPin = 0);
   static void update();
 };
