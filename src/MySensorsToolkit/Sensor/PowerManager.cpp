@@ -87,7 +87,7 @@ void PowerManager::reportBatteryLevel()
   if (batteryPin_ == uint8_t(-1))
     return;
   int voltage = convert2mV(analogRead(batteryPin_));
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   Serial.print("V: ");
   Serial.println(voltage);
   #endif

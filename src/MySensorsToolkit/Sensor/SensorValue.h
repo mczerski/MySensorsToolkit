@@ -40,7 +40,7 @@ class SensorValue : public SensorValueBase {
     bool success = true;
 
     if (abs(lastValue_ - value) > treshold_ || noUpdates_ == FORCE_UPDATE_N_READS) {
-      #ifdef MY_MY_DEBUG
+      #ifdef MYS_TOOLKIT_DEBUG
       Serial.print("t=");
       Serial.print(msg_.type);
       Serial.print(",c=");
@@ -60,7 +60,7 @@ class SensorValue : public SensorValueBase {
       }
       else {
         noUpdates_ = FORCE_UPDATE_N_READS;
-        #ifdef MY_MY_DEBUG
+        #ifdef MYS_TOOLKIT_DEBUG
         Serial.print("t=");
         Serial.print(msg_.type);
         Serial.print(",c=");

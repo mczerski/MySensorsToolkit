@@ -20,7 +20,7 @@ bool SceneController::isFalling(bool swState)
 void SceneController::sendScene_(uint8_t scene)
 {
   sceneMsg_.send(scene);
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   Serial.print("sendScene_ ");
   Serial.print(scene);
   Serial.print(" for child id ");

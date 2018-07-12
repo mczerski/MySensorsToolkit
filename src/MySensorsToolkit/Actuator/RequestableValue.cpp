@@ -17,7 +17,7 @@ static boolean RequestableValueBase::readValue_(EventBase* event)
 {
   RequestableValueBase* value = static_cast<RequestableValueBase*>(event);
   value->updateValueCb_();
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   Serial.print("next measurement: ");
   Serial.println(value->interval_.getMilis());
   #endif
@@ -29,7 +29,7 @@ static boolean RequestableValueBase::startMeasurement_(EventBase* event)
 {
   RequestableValueBase* value = static_cast<RequestableValueBase*>(event);
   Duration conversionTime = value->startMeasurementCb_();
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   Serial.print("startMeasurement conversionTime: ");
   Serial.println(conversionTime.getMilis());
   #endif

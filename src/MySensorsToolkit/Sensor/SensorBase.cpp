@@ -29,7 +29,7 @@ static unsigned long SensorBase::getSleepTimeout_(bool success, unsigned long sl
     consecutiveFails_ = 0;
   }
   unsigned long sleepTimeout = consecutiveFails_ ? (1<<(consecutiveFails_-1))*UPDATE_INTERVAL : sleep;
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   Serial.print("Sleep: ");
   Serial.println(sleepTimeout);
   wait(500);
@@ -118,13 +118,13 @@ static void SensorBase::update()
   if (buttonPin_ != INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(buttonPin_)) {
     digitalWrite(ledPin_, LOW);
     SensorValueBase::forceResend();
-    #ifdef MY_MY_DEBUG
+    #ifdef MYS_TOOLKIT_DEBUG
     Serial.println("Wake up from button");
     #endif
   }
   else if (interruptPin_ != INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(interruptPin_)) {
     digitalWrite(ledPin_, LOW);
-    #ifdef MY_MY_DEBUG
+    #ifdef MYS_TOOLKIT_DEBUG
     Serial.println("Wake up from sensor");
     #endif
   }

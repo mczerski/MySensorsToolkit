@@ -17,7 +17,7 @@ void DimmerActuator::sendCurrentLevel_()
   uint8_t percentage = fromLevel_(dim_.getLevel());
   lightMsg_.send(percentage > 0 ? 1 : 0);
   dimmerMsg_.send(percentage);
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   Serial.print("sendCurrentLevel ");
   Serial.print(percentage);
   Serial.print(" for child id ");
@@ -50,7 +50,7 @@ void DimmerActuator::receive_(const MyMessage &message)
       requestedValue = requestedValue > 100 ? 100 : requestedValue;
       requestedValue = requestedValue < 0   ? 0   : requestedValue;
 
-      #ifdef MY_MY_DEBUG
+      #ifdef MYS_TOOLKIT_DEBUG
       Serial.print("Changing dimmer [");
       Serial.print(message.sensor);
       Serial.print("] level to ");

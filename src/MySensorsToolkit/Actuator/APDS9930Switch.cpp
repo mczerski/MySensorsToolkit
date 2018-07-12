@@ -4,32 +4,32 @@ namespace mys_toolkit {
 
 void MyAPDS9930::pcaSelect_(uint8_t i)
 {
-  #if APDS9930_NUM == 1
-  (void)i;
-  return;
-  #else
-  if (i > 3) return;
-  Wire.beginTransmission(PCAADDR);
-  Wire.write(4 + i);
-  Wire.endTransmission();
-  #endif
+  if (apdsNum_ == 1)
+    return;
+  else {
+    if (i > apdsNum_)
+      return;
+    Wire.beginTransmission(PCAADDR);
+    Wire.write(4 + i);
+    Wire.endTransmission();
+  }
 }
 
 uint8_t MyAPDS9930::pcaGet_()
 {
-  #if APDS9930_NUM == 1
-  return digitalRead(intPin_) == LOW ? 1 : 0;
-  #else
-  Wire.requestFrom(PCAADDR, 1);
-  return Wire.read() >> 4;
-  #endif
+  if (apdsNum_ == 1)
+    return digitalRead(intPin_) == LOW ? 1 : 0;
+  else {
+    Wire.requestFrom(PCAADDR, 1);
+    return Wire.read() >> 4;
+  }
 }
 
 void MyAPDS9930::init_(uint8_t i)
 {
   pcaSelect_(i);
   bool status = apds_[i].init();
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   Serial.print(F("APDS-9930 initializing sensor #"));
   Serial.println(i);
   if (status) {
@@ -39,7 +39,7 @@ void MyAPDS9930::init_(uint8_t i)
   }
   #endif
   status = apds_[i].enableProximitySensor(true);
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   if (status) {
     Serial.println(F("Proximity sensor is now running"));
   } else {
@@ -47,19 +47,19 @@ void MyAPDS9930::init_(uint8_t i)
   }
   #endif
   status = apds_[i].setProximityGain(PGAIN_1X);
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   if (!status) {
     Serial.println(F("Something went wrong trying to set PGAIN"));
   }
   #endif
   status = apds_[i].setProximityIntLowThreshold(PROX_INT_LOW);
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   if (!status) {
     Serial.println(F("Error writing low threshold"));
   }
   #endif
   status = apds_[i].setProximityIntHighThreshold(PROX_INT_HIGH);
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   if (!status) {
     Serial.println(F("Error writing high threshold"));
   }
@@ -73,23 +73,23 @@ bool MyAPDS9930::update_(uint8_t i)
   if (apds_[i].getProximityInt() == 0)
     return false;
   uint16_t proximity_data = 0;
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   Serial.print("Reading sensor #");
   Serial.println(i);
   #endif
   if (!apds_[i].readProximity(proximity_data)) {
-    #ifdef MY_MY_DEBUG
+    #ifdef MYS_TOOLKIT_DEBUG
     Serial.println("Error reading proximity value");
     #endif
   } else {
-    #ifdef MY_MY_DEBUG
+    #ifdef MYS_TOOLKIT_DEBUG
     Serial.print("Proximity detected! Level: ");
     Serial.println(proximity_data);
     #endif
   }
   if (proximity_data < PROX_INT_HIGH) {
     if (!apds_[i].clearProximityInt()) {
-      #ifdef MY_MY_DEBUG
+      #ifdef MYS_TOOLKIT_DEBUG
       Serial.println("Error clearing interrupt");
       #endif
     }
@@ -97,14 +97,15 @@ bool MyAPDS9930::update_(uint8_t i)
   return true;
 }
 
-MyAPDS9930::MyAPDS9930(uint8_t intPin) : intPin_(intPin), apdsInts_(0)
+MyAPDS9930::MyAPDS9930(uint8_t intPin, int apdsNum)
+  : intPin_(intPin), apdsNum_(apdsNum), apdsInts_(0)
 {
 }
 
 void MyAPDS9930::init()
 {
   pinMode(intPin_, INPUT_PULLUP);
-  for (uint8_t i=0; i<APDS9930_NUM; i++)
+  for (uint8_t i=0; i<apdsNum_; i++)
     init_(i);
 }
 
@@ -113,7 +114,7 @@ void MyAPDS9930::update()
   uint8_t pca = pcaGet_();
   apdsInts_ &= pca;
   if (pca) {
-    for (uint8_t i=0; i<APDS9930_NUM; i++) {
+    for (uint8_t i=0; i<apdsNum_; i++) {
       if (pca & (1 << i)) {
         if (update_(i)) {
           apdsInts_ |= (1 << i);

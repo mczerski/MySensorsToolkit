@@ -8,7 +8,7 @@ void Message::send_(Message &msg)
   msg.sendTime_ = millis();
   if (::send(msg.msg_, true))
     return;
-  #ifdef MY_MY_DEBUG
+  #ifdef MYS_TOOLKIT_DEBUG
   Serial.print("Message: failed to send ");
   Serial.print("t=");
   Serial.print(msg.getMyMessage().type);
@@ -40,7 +40,7 @@ void Message::update()
     Message &msg = *messages_[i];
     if (msg.state_ == WAITING_FOR_ACK) {
       if (millis() - msg.sendTime_ > 2000) {
-        #ifdef MY_MY_DEBUG
+        #ifdef MYS_TOOLKIT_DEBUG
         Serial.print("Message: resending ");
         Serial.print("t=");
         Serial.print(msg.getMyMessage().type);

@@ -15,7 +15,7 @@ void DS18B20Sensor::begin_()
   power(HIGH);
   sensor_.begin();
   sensor_.setWaitForConversion(false);
-#ifdef MY_MY_DEBUG
+#ifdef MYS_TOOLKIT_DEBUG
   auto devCount = sensor_.getDeviceCount();
   Serial.print("DS18B20: Found ");
   Serial.print(devCount);
@@ -36,7 +36,7 @@ unsigned long DS18B20Sensor::preUpdate_()
 unsigned long DS18B20Sensor::update_()
 {
   auto temp = sensor_.getTempCByIndex(0);
-#ifdef MY_MY_DEBUG
+#ifdef MYS_TOOLKIT_DEBUG
   auto devCount = sensor_.getDeviceCount();
   Serial.print("DS18B20: temp: ");
   Serial.println(temp);

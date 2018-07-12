@@ -9,10 +9,10 @@
 namespace mys_toolkit {
 
 class MyAPDS9930 {
-  //TODO
-  static constexpr int APDS9930_NUM = 1;
+  static constexpr int MAX_APDS9930_NUM = 4;
   uint8_t intPin_;
-  APDS9930 apds_[APDS9930_NUM];
+  int apdsNum_ = 0;
+  APDS9930 apds_[MAX_APDS9930_NUM];
   uint8_t apdsInts_;
   static const int PCAADDR = 0x70;
   static const int PROX_INT_HIGH = 900; // Proximity level for interrupt
@@ -24,7 +24,7 @@ class MyAPDS9930 {
   bool update_(uint8_t i);
 
 public:
-  MyAPDS9930(uint8_t intPin);
+  MyAPDS9930(uint8_t intPin, int apdsNum);
   void init();
   void update();
   bool getInt(uint8_t i) const;

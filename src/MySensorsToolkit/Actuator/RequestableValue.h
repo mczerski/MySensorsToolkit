@@ -35,7 +35,7 @@ class RequestableValue : public RequestableValueBase
   ValueType value_;
   void updateValueCb_() override {
     value_ = readValueCb_();
-    #ifdef MY_MY_DEBUG
+    #ifdef MYS_TOOLKIT_DEBUG
     Serial.print("readValue: ");
     Serial.println(value_);
     #endif
