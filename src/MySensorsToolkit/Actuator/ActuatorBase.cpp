@@ -1,7 +1,7 @@
-#include "MySensors.h"
 #include "ActuatorBase.h"
 #include "Message.h"
-#include "utils.h"
+#include <MySensorsToolkit/MySensors.h>
+#include <MySensorsToolkit/utils.h>
 
 #include <SoftTimer.h>
 

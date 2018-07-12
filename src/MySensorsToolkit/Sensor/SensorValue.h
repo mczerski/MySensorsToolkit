@@ -1,7 +1,7 @@
 #ifndef SensorValue_h
 #define SensorValue_h
 
-#include "utils.h"
+#include <MySensorsToolkit/utils.h>
 
 #include <core/MyMessage.h>
 

@@ -3,7 +3,7 @@
 
 #include "ActuatorBase.h"
 #include "Message.h"
-#include "Duration.h"
+#include <MySensorsToolkit/Duration.h>
 
 namespace mys_toolkit {
 

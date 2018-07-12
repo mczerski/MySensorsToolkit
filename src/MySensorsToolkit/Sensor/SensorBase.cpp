@@ -1,6 +1,6 @@
 #include "SensorBase.h"
 #include "SensorValue.h"
-#include "utils.h"
+#include <MySensorsToolkit/utils.h>
                     
 namespace mys_toolkit {
 

@@ -1,5 +1,5 @@
-#include "MySensors.h"
 #include "PowerManager.h"
+#include <MySensorsToolkit/MySensors.h>
 
 namespace mys_toolkit {
 

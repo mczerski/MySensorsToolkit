@@ -2,7 +2,7 @@
 #define AnalogBounceSwitch_h
 
 #include "Switch.h"
-#include "Duration.h"
+#include <MySensorsToolkit/Duration.h>
 
 #include <AnalogMultiButton.h>
 

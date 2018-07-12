@@ -1,8 +1,8 @@
 #ifndef Dimmer_h
 #define Dimmer_h
 
-#include "array.h"
-#include "Duration.h"
+#include <MySensorsToolkit/array.h>
+#include <MySensorsToolkit/Duration.h>
 
 namespace mys_toolkit {
 
