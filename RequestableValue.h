@@ -15,10 +15,9 @@ class RequestableValueBase : public EventBase, public ActuatorBase
   void scheduleEvent(boolean (*cb)(EventBase*), Duration delayMs);
   static boolean readValue_(EventBase* event);
   static boolean startMeasurement_(EventBase* event);
-  //TODO: rename
-  virtual void begin2_();
   void begin_() override;
   void receive_(const MyMessage &message) override;
+  virtual void begin2_();
   virtual void updateValueCb_() = 0;
   virtual void send() = 0;
   virtual Duration startMeasurementCb_() = 0;

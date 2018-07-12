@@ -20,7 +20,7 @@ void Message::send_(Message &msg)
 Message::Message(uint8_t sensor, uint8_t type)
   : msg_(sensor, type)
 {
-  if (messagesNum_ < MAX_MY_MY_MESSAGES) {
+  if (messagesNum_ < MAX_MESSAGES) {
     messages_[messagesNum_++] = this;
   }
 }

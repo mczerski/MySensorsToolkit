@@ -15,12 +15,11 @@ enum MessageState {
 
 class Message
 {
-  //TODO: rename
-  static constexpr int MAX_MY_MY_MESSAGES = 10;
+  static constexpr int MAX_MESSAGES = 10;
   MyMessage msg_;
   unsigned long sendTime_ = 0;
   MessageState state_ = SENT;
-  static Message* messages_[MAX_MY_MY_MESSAGES];
+  static Message* messages_[MAX_MESSAGES];
   static int messagesNum_;
   static void send_(Message &msg);
 public:
