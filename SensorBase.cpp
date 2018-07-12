@@ -1,12 +1,6 @@
 #include "SensorBase.h"
 #include "SensorValue.h"
 #include "utils.h"
-
-extern void wait(const uint32_t);
-extern int8_t sleep(const uint8_t interrupt, const uint8_t mode, const uint32_t sleepingMS = 0,
-                    const bool smartSleep = false);
-extern int8_t sleep(const uint8_t interrupt1, const uint8_t mode1, const uint8_t interrupt2,
-                    const uint8_t mode2, const uint32_t sleepingMS = 0, const bool smartSleep = false);
                     
 namespace mys_toolkit {
 

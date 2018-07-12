@@ -1,12 +1,9 @@
+#include "MySensors.h"
 #include "ActuatorBase.h"
 #include "Message.h"
 #include "utils.h"
 
 #include <SoftTimer.h>
-
-//TODO: move to common place
-extern bool present(const uint8_t sensorId, const uint8_t sensorType,
-                    const char *description="", const bool ack=false);
 
 namespace mys_toolkit {
 

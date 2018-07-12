@@ -1,6 +1,5 @@
+#include "MySensors.h"
 #include "PowerManager.h"
-
-extern bool sendBatteryLevel(const uint8_t level, const bool ack = false);
 
 namespace mys_toolkit {
 

@@ -1,6 +1,5 @@
+#include "MySensors.h"
 #include "Message.h"
-
-extern bool send(MyMessage&, const bool);
 
 namespace mys_toolkit {
 

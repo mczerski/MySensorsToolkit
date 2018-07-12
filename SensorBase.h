@@ -1,15 +1,13 @@
 #ifndef SensorBase_h
 #define SensorBase_h
 
+#include "MySensors.h"
 #include "PowerManager.h"
 
 namespace mys_toolkit {
 
 class SensorBase {
   static constexpr uint8_t MAX_SENSORS = 10;
-  //TODO: move to common mysensors place
-  static constexpr uint8_t INTERRUPT_NOT_DEFINED = 255;
-  static constexpr uint8_t MODE_NOT_DEFINED = 255;
   static uint8_t sensorsCount_;
   static SensorBase* sensors_[MAX_SENSORS];
   static PowerManager* powerManager_;

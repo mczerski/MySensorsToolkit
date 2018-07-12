@@ -1,7 +1,5 @@
+#include "MySensors.h"
 #include "SensorValue.h"
-
-extern bool present(const uint8_t sensorId, const uint8_t sensorType, const char *description="",
-                    const bool ack = false);
 
 namespace mys_toolkit {
 

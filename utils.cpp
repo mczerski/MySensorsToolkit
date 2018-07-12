@@ -1,9 +1,5 @@
+#include "MySensors.h"
 #include "utils.h"
-
-extern bool isTransportReady();
-extern void wait(const uint32_t);
-extern bool wait(const uint32_t waitingMS, const uint8_t cmd, const uint8_t msgtype);
-extern bool send(MyMessage&, const bool);
 
 namespace mys_toolkit {
 
