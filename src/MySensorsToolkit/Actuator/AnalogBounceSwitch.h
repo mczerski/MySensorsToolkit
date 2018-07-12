@@ -10,7 +10,6 @@ namespace mys_toolkit {
 
 class AnalogBounceSwitch : public Switch {
   AnalogMultiButton button_;
-  const int buttonValues_[1] = {0};
   bool doUpdate_() override;
 
 public:

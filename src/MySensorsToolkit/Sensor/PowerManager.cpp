@@ -5,7 +5,7 @@ namespace mys_toolkit {
 
 int convert2mV(int v)
 {
-  int voltage_mV = v * 1.1 * 1.1 * 1000 * 10 / 1024; //includes 1/11 divider
+  int voltage_mV = 11 * 1000 * v * 1.1 / 1024; //includes 1/11 divider
   return voltage_mV;
 }
 
