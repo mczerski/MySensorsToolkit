@@ -21,8 +21,9 @@ class SensorBase {
   static const unsigned long UPDATE_INTERVAL = 1000;
   static unsigned long now_;
   static unsigned long lastUpdate_;
+  bool initialised_ = false;
 
-  virtual void begin_();
+  virtual bool begin_();
   virtual unsigned long preUpdate_();
   virtual unsigned long update_();
 

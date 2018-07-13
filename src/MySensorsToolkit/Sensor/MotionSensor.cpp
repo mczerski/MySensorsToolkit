@@ -2,9 +2,10 @@
 
 namespace mys_toolkit {
 
-void MotionSensor::begin_()
+bool MotionSensor::begin_()
 {
   pinMode(pin_, INPUT);
+  return true;
 }
 
 unsigned long MotionSensor::update_()

@@ -4,8 +4,9 @@
                     
 namespace mys_toolkit {
 
-void SensorBase::begin_()
+bool SensorBase::begin_()
 {
+  return true;
 }
 
 unsigned long SensorBase::preUpdate_()
@@ -72,7 +73,7 @@ static void SensorBase::begin(uint8_t batteryPin, bool liIonBattery, uint8_t pow
   powerManager_->setupPowerBoost(powerBoostPin, initialBoostOn or alwaysBoostOn_);
   powerManager_->setBatteryPin(batteryPin, liIonBattery);
   for (size_t i=0; i<sensorsCount_; i++)
-    sensors_[i]->begin_();
+    sensors_[i]->initialised_ = sensors_[i]->begin_();
 }
 
 static void SensorBase::update()
@@ -85,8 +86,10 @@ static void SensorBase::update()
 
   unsigned long maxWait = 0;
   for (size_t i=0; i<sensorsCount_; i++) {
-    auto wait = sensors_[i]->preUpdate_();
-    maxWait = max(maxWait, wait);
+    if (sensors_[i]->initialised_) {
+      auto wait = sensors_[i]->preUpdate_();
+      maxWait = max(maxWait, wait);
+    }
   }
   wait(maxWait);
 
@@ -96,8 +99,10 @@ static void SensorBase::update()
 
   unsigned long minWait = -1;
   for (size_t i=0; i<sensorsCount_; i++) {
-    auto wait = sensors_[i]->update_();
-    minWait = min(minWait, wait);
+    if (sensors_[i]->initialised_) {
+      auto wait = sensors_[i]->update_();
+      minWait = min(minWait, wait);
+    }
   }
   bool success = SensorValueBase::afterUpdate();
 

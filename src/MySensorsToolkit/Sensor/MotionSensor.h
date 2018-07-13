@@ -17,7 +17,7 @@ class MotionSensor: public SensorBase
   uint8_t pin_;
   State state_;
   SensorValue<uint16_t> tripped_;
-  void begin_() override;
+  bool begin_() override;
   unsigned long update_() override;
 
 public:

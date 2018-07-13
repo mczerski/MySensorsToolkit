@@ -17,4 +17,12 @@ bool sendAndWait(MyMessage &msg, uint32_t wait_ms)
   return send(msg, true) and wait(wait_ms, C_SET, msg.type);
 }
 
+#ifdef MYS_TOOLKIT_DEBUG
+void logMsg(const char * const text)
+{
+  static MyMessage msg(254, S_INFO);
+  send(msg.set(text));
+}
+#endif
+
 } //mys_toolkit

@@ -19,6 +19,8 @@ inline void setMessageValue(MyMessage &msg, float value)
 void checkTransport();
 bool sendAndWait(MyMessage &msg, uint32_t wait_ms);
 
+void logMsg(const char * const text);
+
 } //mys_toolkit
 
 #endif //SensorBases_h
