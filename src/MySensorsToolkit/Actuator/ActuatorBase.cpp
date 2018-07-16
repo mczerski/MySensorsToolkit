@@ -30,19 +30,19 @@ ActuatorBase::ActuatorBase(uint8_t sensorId, uint8_t sensorType)
     sensors_[sensorsCount_++] = this;
 }
 
-static void ActuatorBase::begin()
+void ActuatorBase::begin()
 {
   for (size_t i=0; i<sensorsCount_; i++)
     sensors_[i]->begin_();
 }
 
-static void ActuatorBase::present()
+void ActuatorBase::present()
 {
   for (size_t i=0; i<sensorsCount_; i++)
     ::present(sensors_[i]->sensorId_, sensors_[i]->sensorType_);
 }
 
-static void ActuatorBase::update()
+void ActuatorBase::update()
 {
   timer_.update();
   Message::update();
@@ -56,7 +56,7 @@ static void ActuatorBase::update()
   }
 }
 
-static void ActuatorBase::receive(const MyMessage &message)
+void ActuatorBase::receive(const MyMessage &message)
 {
   if (message.isAck()) {
     Message::setSent(message);
@@ -67,7 +67,7 @@ static void ActuatorBase::receive(const MyMessage &message)
       sensors_[i]->receive_(message);
 }
 
-static int16_t ActuatorBase::addEvent(EventBase* evt)
+int16_t ActuatorBase::addEvent(EventBase* evt)
 {
   return timer_.addEvent(evt);
 }

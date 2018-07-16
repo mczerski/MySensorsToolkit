@@ -2,7 +2,7 @@
 
 namespace mys_toolkit {
 
-Switch::Switch(bool activeLow = false)
+Switch::Switch(bool activeLow)
   : activeLow_(activeLow)
 {
 }

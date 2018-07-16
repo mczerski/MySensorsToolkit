@@ -1,5 +1,4 @@
-#ifndef MotionSensor_h
-#define MotionSensor_h
+#pragma once
 
 #include "SensorBase.h"
 #include "SensorValue.h"
@@ -27,4 +26,3 @@ public:
 
 } //mys_toolkit
 
-#endif //MotionSensor_h

@@ -4,7 +4,7 @@
 
 namespace mys_toolkit {
 
-static void Duration::setClockPrescaler(uint8_t clockPrescaler)
+void Duration::setClockPrescaler(uint8_t clockPrescaler)
 {
   ::setClockPrescaler(clockPrescaler);
 }

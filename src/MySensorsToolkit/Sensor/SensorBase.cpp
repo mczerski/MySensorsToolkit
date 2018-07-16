@@ -1,7 +1,9 @@
 #include "Parameter.h"
 #include "SensorValue.h"
 #include "SensorBase.h"
+#include "PowerManager.h"
 #include <MySensorsToolkit/utils.h>
+#include <MySensorsToolkit/MySensors.h>
                     
 namespace mys_toolkit {
 
@@ -20,7 +22,7 @@ unsigned long SensorBase::update_()
   return SLEEP_TIME;
 }
 
-static unsigned long SensorBase::getSleepTimeout_(bool success, unsigned long sleep)
+unsigned long SensorBase::getSleepTimeout_(bool success, unsigned long sleep)
 {
   if (!success) {
     if (consecutiveFails_ < N_RETRIES) {
@@ -53,12 +55,12 @@ SensorBase::SensorBase()
     sensors_[sensorsCount_++] = this;
 }
 
-static void SensorBase::present()
+void SensorBase::present()
 {
   SensorValueBase::present();
   ParameterBase::present();
 }
-static void SensorBase::begin(uint8_t batteryPin, bool liIonBattery, uint8_t powerBoostPin,
+void SensorBase::begin(uint8_t batteryPin, bool liIonBattery, uint8_t powerBoostPin,
                               bool initialBoostOn, bool alwaysBoostOn, uint8_t buttonPin, uint8_t ledPin)
 {
   alwaysBoostOn_ = alwaysBoostOn;
@@ -71,17 +73,16 @@ static void SensorBase::begin(uint8_t batteryPin, bool liIonBattery, uint8_t pow
   pinMode(ledPin_, OUTPUT);
   digitalWrite(ledPin_, LOW);
 
-  powerManager_ = &PowerManager::getInstance();
-  powerManager_->setupPowerBoost(powerBoostPin, initialBoostOn or alwaysBoostOn_);
-  powerManager_->setBatteryPin(batteryPin, liIonBattery);
+  PowerManager::getInstance().setupPowerBoost(powerBoostPin, initialBoostOn or alwaysBoostOn_);
+  PowerManager::getInstance().setBatteryPin(batteryPin, liIonBattery);
   for (size_t i=0; i<sensorsCount_; i++)
     sensors_[i]->initialised_ = sensors_[i]->begin_();
 }
 
-static void SensorBase::update()
+void SensorBase::update()
 {
   if (not alwaysBoostOn_) {
-    powerManager_->turnBoosterOn();
+    PowerManager::getInstance().turnBoosterOn();
     //wait for everything to setup (100ms for dc/dc converter)
     wait(100);
   }
@@ -108,13 +109,13 @@ static void SensorBase::update()
   }
   bool success = SensorValueBase::wasSuccess();
 
-  powerManager_->reportBatteryLevel();
+  PowerManager::getInstance().reportBatteryLevel();
   unsigned long sleepTimeout = getSleepTimeout_(success, minWait);
 
   digitalWrite(ledPin_, HIGH);
 
   if (not alwaysBoostOn_)
-    powerManager_->turnBoosterOff();
+    PowerManager::getInstance().turnBoosterOff();
 
   int wakeUpCause;
   auto smartSleep = SensorValueBase::wasSomethingSent();
@@ -138,7 +139,7 @@ static void SensorBase::update()
   }
 }
 
-static void SensorBase::receive(const MyMessage &message) {
+void SensorBase::receive(const MyMessage &message) {
   ParameterBase::receive(message);
 }
 
@@ -150,6 +151,5 @@ uint8_t SensorBase::ledPin_;
 uint8_t SensorBase::interruptPin_ = MYS_TOOLKIT_INTERRUPT_NOT_DEFINED;
 uint8_t SensorBase::interruptMode_ = MYS_TOOLKIT_MODE_NOT_DEFINED;
 bool SensorBase::alwaysBoostOn_ = false;
-PowerManager* SensorBase::powerManager_ = nullptr;
 
 } //mys_toolkit

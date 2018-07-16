@@ -1,4 +1,5 @@
-#include <MySensorsToolkit/MySensors.h>
+#pragma once
+
 #include <MySensorsToolkit/utils.h>
 
 namespace mys_toolkit {
@@ -8,7 +9,7 @@ protected:
   MyMessage msg_;
   uint8_t sensorId_;
   uint8_t sensorType_;
-  uint8_t parameterPoition_;
+  uint8_t parameterPosition_;
   static uint8_t parametersCount_;
   static constexpr uint8_t MAX_PARAMETERS = 10;
   static ParameterBase* parameters_[MAX_PARAMETERS];
@@ -30,14 +31,14 @@ class Parameter : public ParameterBase {
   void save_(ValueType value) {
     uint32_t tmp = value;
     for (uint8_t i=0; i<sizeof(ValueType); i++) {
-      saveState(parameterPoition_ + i, (tmp >> i) & 0xff);
+      saveState(parameterPosition_ + i, (tmp >> i) & 0xff);
     }
   }
 
   ValueType load_() {
     uint32_t tmp = 0;
     for (uint8_t i=0; i<sizeof(ValueType); i++) {
-      tmp |= (static_cast<uint32_t>(loadState(parameterPoition_ + i)) << i);
+      tmp |= (static_cast<uint32_t>(loadState(parameterPosition_ + i)) << i);
     }
     return ValueType(tmp);
   }

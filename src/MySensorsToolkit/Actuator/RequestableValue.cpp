@@ -13,7 +13,7 @@ void RequestableValueBase::scheduleEvent(boolean (*cb)(EventBase*), Duration del
   this->addEvent(this);
 }
 
-static boolean RequestableValueBase::readValue_(EventBase* event)
+boolean RequestableValueBase::readValue_(EventBase* event)
 {
   RequestableValueBase* value = static_cast<RequestableValueBase*>(event);
   value->updateValueCb_();
@@ -25,7 +25,7 @@ static boolean RequestableValueBase::readValue_(EventBase* event)
   return true;
 }
 
-static boolean RequestableValueBase::startMeasurement_(EventBase* event)
+boolean RequestableValueBase::startMeasurement_(EventBase* event)
 {
   RequestableValueBase* value = static_cast<RequestableValueBase*>(event);
   Duration conversionTime = value->startMeasurementCb_();
@@ -55,8 +55,8 @@ void RequestableValueBase::receive_(const MyMessage &message)
 
 RequestableValueBase::RequestableValueBase(uint8_t sensorId, uint8_t type, uint8_t sensorType, Duration interval)
   : ActuatorBase(sensorId, sensorType),
-    msg_(sensorId, type),
-    interval_(interval)
+    interval_(interval),
+    msg_(sensorId, type)
 {
 }
 

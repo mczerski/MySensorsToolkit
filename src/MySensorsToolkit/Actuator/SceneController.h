@@ -1,5 +1,4 @@
-#ifndef SceneController_h
-#define SceneController_h
+#pragma once
 
 #include "ActuatorBase.h"
 #include "Message.h"
@@ -34,5 +33,4 @@ public:
 
 } //mys_toolkit
 
-#endif //SceneController_h
 

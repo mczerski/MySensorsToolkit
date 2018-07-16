@@ -1,5 +1,4 @@
-#ifndef PowerManager_h
-#define PowerManager_h
+#pragma once
 
 #include <Arduino.h>
 
@@ -28,4 +27,3 @@ public:
 
 } //mys_toolkit
 
-#endif //PowerManager_h

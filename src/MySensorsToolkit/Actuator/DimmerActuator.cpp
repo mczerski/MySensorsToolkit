@@ -2,12 +2,12 @@
 
 namespace mys_toolkit {
 
-static uint8_t DimmerActuator::fromPercentage_(uint8_t percentage)
+uint8_t DimmerActuator::fromPercentage_(uint8_t percentage)
 {
   return uint8_t(round(255.0*percentage/100));
 }
 
-static uint8_t DimmerActuator::fromLevel_(uint8_t level)
+uint8_t DimmerActuator::fromLevel_(uint8_t level)
 {
   return uint8_t(round(100.0*level/255));
 }

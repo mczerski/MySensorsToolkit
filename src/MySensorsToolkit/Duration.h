@@ -1,5 +1,4 @@
-#ifndef Duration_h
-#define Duration_h
+#pragma once
 
 #include "prescaler.h"
 
@@ -24,4 +23,3 @@ private:
 
 } //mys_toolkit
 
-#endif //Duration_h

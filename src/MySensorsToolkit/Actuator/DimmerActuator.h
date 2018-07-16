@@ -1,5 +1,4 @@
-#ifndef DimmerActuator_h
-#define DimmerActuator_h
+#pragma once
 
 #include "ActuatorBase.h"
 #include "Message.h"
@@ -27,4 +26,3 @@ public:
 
 } //mys_toolkit
 
-#endif //DimmerActuator_h

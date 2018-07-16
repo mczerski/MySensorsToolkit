@@ -1,5 +1,4 @@
-#ifndef Relay_h
-#define Relay_h
+#pragma once
 
 namespace mys_toolkit {
 
@@ -20,4 +19,3 @@ public:
 
 } //mys_toolkit
 
-#endif //Relay_h

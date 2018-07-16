@@ -1,5 +1,4 @@
-#ifndef utils_h
-#define utils_h
+#pragma once
 
 #include <core/MyMessage.h>
 
@@ -58,9 +57,10 @@ inline uint32_t getMessageValue<uint32_t>(const MyMessage &msg) {
 
 void checkTransport();
 bool sendAndWait(MyMessage &msg, uint32_t wait_ms);
+void saveState(const uint8_t pos, const uint8_t value);
+uint8_t loadState(const uint8_t pos);
 
 void logMsg(const char * const text);
 
 } //mys_toolkit
 
-#endif //SensorBases_h

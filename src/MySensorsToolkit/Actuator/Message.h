@@ -1,5 +1,4 @@
-#ifndef Message_h
-#define Message_h
+#pragma once
 
 #include <MySensorsToolkit/utils.h>
 
@@ -37,4 +36,3 @@ public:
 
 } //mys_toolkit
 
-#endif //Message_h

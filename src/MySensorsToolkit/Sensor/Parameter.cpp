@@ -1,4 +1,5 @@
 #include "Parameter.h"
+#include <MySensorsToolkit/MySensors.h>
 
 namespace mys_toolkit {
 
@@ -9,18 +10,18 @@ void ParameterBase::present_()
 ParameterBase::ParameterBase(uint8_t sensorId, uint8_t type, uint8_t sensorType)
   : msg_(sensorId+100, type), sensorId_(sensorId+100), sensorType_(sensorType)
 {
-  parameterPoition_ = globalParameterPosition_;
+  parameterPosition_ = globalParameterPosition_;
   if (parametersCount_ < MAX_PARAMETERS)
     parameters_[parametersCount_++] = this;
 }
 
-static void ParameterBase::present()
+void ParameterBase::present()
 {
   for (size_t i=0; i<parametersCount_; i++)
     parameters_[i]->present_();
 }
 
-static void ParameterBase::receive(const MyMessage &message)
+void ParameterBase::receive(const MyMessage &message)
 {
   for (size_t i=0; i<parametersCount_; i++) {
     if (parameters_[i]->sensorId_ == message.sensor) {

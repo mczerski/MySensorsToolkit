@@ -1,5 +1,4 @@
-#ifndef array_h
-#define array_h
+#pragma once
 
 #include <stddef.h>
 
@@ -22,4 +21,3 @@ struct array {
 
 } //mys_toolkit
 
-#endif //array_h

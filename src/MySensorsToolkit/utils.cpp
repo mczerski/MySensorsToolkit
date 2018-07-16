@@ -17,6 +17,16 @@ bool sendAndWait(MyMessage &msg, uint32_t wait_ms)
   return send(msg, true) and wait(wait_ms, C_SET, msg.type);
 }
 
+void saveState(const uint8_t pos, const uint8_t value)
+{
+  ::saveState(pos, value);
+}
+
+uint8_t loadState(const uint8_t pos)
+{
+  return ::loadState(pos);
+}
+
 #ifdef MYS_TOOLKIT_DEBUG
 void logMsg(const char * const text)
 {

@@ -20,36 +20,36 @@ SensorValueBase::SensorValueBase(uint8_t sensorId, uint8_t type, uint8_t sensorT
     values_[valuesCount_++] = this;
 }
 
-static void SensorValueBase::present()
+void SensorValueBase::present()
 {
   for (size_t i=0; i<valuesCount_; i++)
     values_[i]->present_();
 }
 
-static void SensorValueBase::forceResend()
+void SensorValueBase::forceResend()
 {
   for (size_t i=0; i<valuesCount_; i++)
     values_[i]->forceResend_();
 }
 
-static void SensorValueBase::beforeUpdate()
+void SensorValueBase::beforeUpdate()
 {
   success_ = true;
   somethingSent_ = false;
 }
 
-static void SensorValueBase::update(bool success, bool somethingSent)
+void SensorValueBase::update(bool success, bool somethingSent)
 {
   success_ &= success;
   somethingSent_ |= somethingSent;
 }
 
-static bool SensorValueBase::wasSuccess()
+bool SensorValueBase::wasSuccess()
 {
   return success_;
 }
 
-static bool SensorValueBase::wasSomethingSent() {
+bool SensorValueBase::wasSomethingSent() {
   return somethingSent_;
 }
 

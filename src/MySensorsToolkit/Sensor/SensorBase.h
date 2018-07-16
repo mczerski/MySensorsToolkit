@@ -1,16 +1,15 @@
-#ifndef SensorBase_h
-#define SensorBase_h
+#pragma once
 
-#include "PowerManager.h"
-#include <MySensorsToolkit/MySensors.h>
+#include <core/MyMessage.h>
 
 namespace mys_toolkit {
 
 class SensorBase {
+  static constexpr uint8_t MYS_TOOLKIT_INTERRUPT_NOT_DEFINED = 255;
+  static constexpr uint8_t MYS_TOOLKIT_MODE_NOT_DEFINED = 255;
   static constexpr uint8_t MAX_SENSORS = 10;
   static uint8_t sensorsCount_;
   static SensorBase* sensors_[MAX_SENSORS];
-  static PowerManager* powerManager_;
   static uint8_t consecutiveFails_;
   static uint8_t buttonPin_;
   static uint8_t ledPin_;
@@ -47,4 +46,3 @@ public:
 
 } //mys_toolkit
 
-#endif //SensorBase_h

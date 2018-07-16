@@ -1,5 +1,4 @@
-#ifndef SensorValue_h
-#define SensorValue_h
+#pragma once
 
 #include <MySensorsToolkit/utils.h>
 
@@ -89,4 +88,3 @@ public:
 
 } //mys_toolkit
 
-#endif //SensorValue_h

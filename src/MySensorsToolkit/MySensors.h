@@ -1,5 +1,4 @@
-#ifndef MySToolkitMySensors_h
-#define MySToolkitMySensors_h
+#pragma once
 
 #include <stdint.h>
 #include <core/MyMessage.h>
@@ -18,9 +17,3 @@ extern bool isTransportReady();
 extern void saveState(const uint8_t pos, const uint8_t value);
 extern uint8_t loadState(const uint8_t pos);
 
-namespace mys_toolkit {
-  constexpr uint8_t MYS_TOOLKIT_INTERRUPT_NOT_DEFINED = 255;
-  constexpr uint8_t MYS_TOOLKIT_MODE_NOT_DEFINED = 255;
-}
-
-#endif //MySToolkitMySensors_h

@@ -1,5 +1,4 @@
-#ifndef RelayActuator_h
-#define RelayActuator_h
+#pragma once
 
 #include "ActuatorBase.h"
 #include "Relay.h"
@@ -24,4 +23,3 @@ public:
 
 } //mys_toolkit
 
-#endif //RelayActuator_h

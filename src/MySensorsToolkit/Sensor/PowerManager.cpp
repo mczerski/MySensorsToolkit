@@ -53,19 +53,19 @@ void PowerManager::handleBatteryLevel_(uint8_t value)
   }
 }
 
-static PowerManager& PowerManager::getInstance()
+PowerManager& PowerManager::getInstance()
 {
   return instance_;
 }
 
-void PowerManager::setupPowerBoost(uint8_t powerBoostPin = -1,  bool initialBoostOn = false)
+void PowerManager::setupPowerBoost(uint8_t powerBoostPin,  bool initialBoostOn)
 {
   powerBoostPin_ = powerBoostPin;
   pinMode(powerBoostPin_, OUTPUT);
   digitalWrite(powerBoostPin_, initialBoostOn);
 }
 
-void PowerManager::setBatteryPin(uint8_t batteryPin, bool liIonBattery = false)
+void PowerManager::setBatteryPin(uint8_t batteryPin, bool liIonBattery)
 {
   batteryPin_ = batteryPin;
   liIonBattery_ = liIonBattery;

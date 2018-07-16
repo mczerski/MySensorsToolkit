@@ -50,7 +50,7 @@ void SceneController::update_()
   prevSwState_ = currSwState;
 }
 
-SceneController::SceneController(uint8_t sensorId, Switch &sw, bool enableShortPress=true)
+SceneController::SceneController(uint8_t sensorId, Switch &sw, bool enableShortPress)
   : ActuatorBase(sensorId, S_SCENE_CONTROLLER),
     state_(WAITING_FOR_RISING),
     prevSwState_(false),

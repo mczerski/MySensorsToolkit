@@ -1,5 +1,4 @@
-#ifndef ActuatorBase_h
-#define ActuatorBase_h
+#pragma once
 
 #include <core/MyMessage.h>
 #include <SoftTimer.h>
@@ -31,4 +30,3 @@ public:
 
 } //mys_toolkit
 
-#endif //ActuatorBase_h

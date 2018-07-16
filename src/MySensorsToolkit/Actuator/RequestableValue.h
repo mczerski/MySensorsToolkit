@@ -1,5 +1,4 @@
-#ifndef RequestableValue_h
-#define RequestableValue_h
+#pragma once
 
 #include "ActuatorBase.h"
 #include "Message.h"
@@ -53,4 +52,3 @@ public:
 
 } //mys_toolkit
 
-#endif //RequestableValue_h

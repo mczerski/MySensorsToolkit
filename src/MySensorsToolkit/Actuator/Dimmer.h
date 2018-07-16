@@ -1,5 +1,4 @@
-#ifndef Dimmer_h
-#define Dimmer_h
+#pragma once
 
 #include <MySensorsToolkit/array.h>
 #include <MySensorsToolkit/Duration.h>
@@ -107,4 +106,3 @@ using SimpleDimmer = SimpleDimmerN<1>;
 
 } //mys_toolkit
 
-#endif //Dimmer_h

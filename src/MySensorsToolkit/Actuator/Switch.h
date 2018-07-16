@@ -1,5 +1,4 @@
-#ifndef Switch_h
-#define Switch_h
+#pragma once
 
 #include <stdint.h>
 
@@ -15,4 +14,3 @@ public:
 
 } //mys_toolkit
 
-#endif //Switch_h
