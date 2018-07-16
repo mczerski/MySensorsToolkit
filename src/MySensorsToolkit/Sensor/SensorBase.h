@@ -42,6 +42,7 @@ public:
                     bool initialBoostOn = false, bool alwaysBoostOn = false, uint8_t buttonPin = MYS_TOOLKIT_INTERRUPT_NOT_DEFINED,
                     uint8_t ledPin = 0);
   static void update();
+  static void receive(const MyMessage &message);
 };
 
 } //mys_toolkit

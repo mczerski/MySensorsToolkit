@@ -1,5 +1,6 @@
-#include "SensorBase.h"
+#include "Parameter.h"
 #include "SensorValue.h"
+#include "SensorBase.h"
 #include <MySensorsToolkit/utils.h>
                     
 namespace mys_toolkit {
@@ -55,6 +56,7 @@ SensorBase::SensorBase()
 static void SensorBase::present()
 {
   SensorValueBase::present();
+  ParameterBase::present();
 }
 static void SensorBase::begin(uint8_t batteryPin, bool liIonBattery, uint8_t powerBoostPin,
                               bool initialBoostOn, bool alwaysBoostOn, uint8_t buttonPin, uint8_t ledPin)
@@ -116,9 +118,9 @@ static void SensorBase::update()
 
   int wakeUpCause;
   if (buttonPin_ == MYS_TOOLKIT_INTERRUPT_NOT_DEFINED)
-    wakeUpCause = sleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+    wakeUpCause = smartSleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
   else
-    wakeUpCause = sleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+    wakeUpCause = smartSleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
 
   if (buttonPin_ != MYS_TOOLKIT_INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(buttonPin_)) {
     digitalWrite(ledPin_, LOW);
@@ -133,6 +135,10 @@ static void SensorBase::update()
     Serial.println("Wake up from sensor");
     #endif
   }
+}
+
+static void SensorBase::receive(const MyMessage &message) {
+  ParameterBase::receive(message);
 }
 
 uint8_t SensorBase::sensorsCount_ = 0;
