@@ -11,7 +11,7 @@ bool MotionSensor::begin_()
 unsigned long MotionSensor::update_()
 {
   bool motion = digitalRead(pin_);
-  unsigned long wait = -1;
+  unsigned long wait = SLEEP_TIME;
   if (state_ == NO_MOTION) {
     if (motion) {
       state_ = MOTION_HIGH;
