@@ -3,6 +3,7 @@
 
 #include "SensorBase.h"
 #include "SensorValue.h"
+#include "Parameter.h"
 
 namespace mys_toolkit {
 
@@ -13,10 +14,10 @@ class MotionSensor: public SensorBase
     MOTION_LOW,
     NO_MOTION
   };
-  static const unsigned long TRIGGER_DELAY = 30000 - 2000;
   uint8_t pin_;
   State state_;
   SensorValue<uint16_t> tripped_;
+  Parameter<uint8_t> triggerDelay_;
   bool begin_() override;
   unsigned long update_() override;
 

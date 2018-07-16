@@ -47,7 +47,7 @@ class Parameter : public ParameterBase {
     if (value == erasedValue) 
       return;
     save_(value);
-    setMessageValue_(msg_, value);
+    setMessageValue(msg_, value);
   }
 public:
   Parameter(uint8_t sensorId, uint8_t type, uint8_t sensorType, ValueType init = 0)
@@ -60,7 +60,7 @@ public:
       save_(init);
     else
       init = eeprom;
-    setMessageValue_(msg_, init);
+    setMessageValue(msg_, init);
   }
   ValueType get() {
     return getMessageValue<ValueType>(msg_);
