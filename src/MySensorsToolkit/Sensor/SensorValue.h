@@ -18,6 +18,7 @@ protected:
   static constexpr uint8_t MAX_VALUES = 10;
   static SensorValueBase* values_[MAX_VALUES];
   static bool success_;
+  static bool somethingSent_;
 
   void present_();
   void forceResend_();
@@ -27,8 +28,9 @@ public:
   static void present();
   static void forceResend();
   static void beforeUpdate();
-  static void update(bool success);
-  static bool afterUpdate();
+  static void update(bool success, bool somethingSent);
+  static bool wasSuccess();
+  static bool wasSomethingSent();
 };
 
 template <typename ValueType>
@@ -36,8 +38,17 @@ class SensorValue : public SensorValueBase {
   ValueType lastValue_;
   ValueType treshold_;
 
-  bool handleValue_(ValueType value) {
+  bool sendMessage_(ValueType value) {
+    setMessageValue(msg_, value);
+    return sendAndWait(msg_, 2000);
+  }
+
+public:
+  SensorValue(uint8_t sensorId, uint8_t type, uint8_t sensorType, ValueType treshold = 0)
+    : SensorValueBase(sensorId, type, sensorType), lastValue_(-1), treshold_(treshold)  {}
+  void update(ValueType value) {
     bool success = true;
+    bool somethingSent = false;
 
     if (abs(lastValue_ - value) > treshold_ || noUpdates_ == FORCE_UPDATE_N_READS) {
       #ifdef MYS_TOOLKIT_DEBUG
@@ -57,6 +68,7 @@ class SensorValue : public SensorValueBase {
       success = sendMessage_(value);
       if (success) {
         noUpdates_ = 0;
+        somethingSent = true;
       }
       else {
         noUpdates_ = FORCE_UPDATE_N_READS;
@@ -71,18 +83,7 @@ class SensorValue : public SensorValueBase {
     } else {
       noUpdates_++;
     }
-    return success;
-  }
-  bool sendMessage_(ValueType value) {
-    setMessageValue(msg_, value);
-    return sendAndWait(msg_, 2000);
-  }
-
-public:
-  SensorValue(uint8_t sensorId, uint8_t type, uint8_t sensorType, ValueType treshold = 0)
-    : SensorValueBase(sensorId, type, sensorType), lastValue_(-1), treshold_(treshold)  {}
-  void update(ValueType value) {
-    SensorValueBase::update(handleValue_(value));
+    SensorValueBase::update(success, somethingSent);
   }
 };
 

@@ -106,7 +106,7 @@ static void SensorBase::update()
       minWait = min(minWait, wait);
     }
   }
-  bool success = SensorValueBase::afterUpdate();
+  bool success = SensorValueBase::wasSuccess();
 
   powerManager_->reportBatteryLevel();
   unsigned long sleepTimeout = getSleepTimeout_(success, minWait);
@@ -117,10 +117,11 @@ static void SensorBase::update()
     powerManager_->turnBoosterOff();
 
   int wakeUpCause;
+  auto smartSleep = SensorValueBase::wasSomethingSent();
   if (buttonPin_ == MYS_TOOLKIT_INTERRUPT_NOT_DEFINED)
-    wakeUpCause = smartSleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+    wakeUpCause = sleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout, smartSleep);
   else
-    wakeUpCause = smartSleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout);
+    wakeUpCause = sleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout, smartSleep);
 
   if (buttonPin_ != MYS_TOOLKIT_INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(buttonPin_)) {
     digitalWrite(ledPin_, LOW);

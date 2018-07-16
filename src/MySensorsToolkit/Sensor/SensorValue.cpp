@@ -35,20 +35,27 @@ static void SensorValueBase::forceResend()
 static void SensorValueBase::beforeUpdate()
 {
   success_ = true;
+  somethingSent_ = false;
 }
 
-static void SensorValueBase::update(bool success)
+static void SensorValueBase::update(bool success, bool somethingSent)
 {
   success_ &= success;
+  somethingSent_ |= somethingSent;
 }
 
-static bool SensorValueBase::afterUpdate()
+static bool SensorValueBase::wasSuccess()
 {
   return success_;
+}
+
+static bool SensorValueBase::wasSomethingSent() {
+  return somethingSent_;
 }
 
 uint8_t SensorValueBase::valuesCount_ = 0;
 SensorValueBase* SensorValueBase::values_[];
 bool SensorValueBase::success_ = true;
+bool SensorValueBase::somethingSent_ = false;
 
 } //mys_toolkit
