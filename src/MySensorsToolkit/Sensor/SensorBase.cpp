@@ -3,6 +3,7 @@
 #include "SensorBase.h"
 #include "PowerManager.h"
 #include <MySensorsToolkit/utils.h>
+#include <MySensorsToolkit/Message.h>
 #include <MySensorsToolkit/MySensors.h>
                     
 namespace mys_toolkit {
@@ -98,8 +99,6 @@ void SensorBase::update()
 
   checkTransport();
 
-  SensorValueBase::beforeUpdate();
-
   unsigned long minWait = -1;
   for (size_t i=0; i<sensorsCount_; i++) {
     if (sensors_[i]->initialised_) {
@@ -107,12 +106,12 @@ void SensorBase::update()
       minWait = min(minWait, wait);
     }
   }
-  bool success = SensorValueBase::wasSuccess();
+  auto result = Message::sendAll();
   if (minWait == static_cast<unsigned long>(-1))
     minWait = SLEEP_TIME;
 
   PowerManager::getInstance().reportBatteryLevel();
-  unsigned long sleepTimeout = getSleepTimeout_(success, minWait);
+  unsigned long sleepTimeout = getSleepTimeout_(result.success, minWait);
 
   digitalWrite(ledPin_, HIGH);
 
@@ -121,7 +120,7 @@ void SensorBase::update()
 
   int wakeUpCause;
   static bool wakeupFromButton = false;
-  auto smartSleep = buttonPin_ != MYS_TOOLKIT_INTERRUPT_NOT_DEFINED ? wakeupFromButton : SensorValueBase::wasSomethingSent();
+  auto smartSleep = buttonPin_ != MYS_TOOLKIT_INTERRUPT_NOT_DEFINED ? wakeupFromButton : result.somethingSent;
   if (buttonPin_ == MYS_TOOLKIT_INTERRUPT_NOT_DEFINED)
     wakeUpCause = sleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout, smartSleep);
   else

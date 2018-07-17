@@ -21,7 +21,7 @@ void DimmerActuator::sendCurrentLevel_()
   Serial.print("sendCurrentLevel ");
   Serial.print(percentage);
   Serial.print(" for child id ");
-  Serial.println(lightMsg_.getMyMessage().sensor);
+  Serial.println(lightMsg_.getSensor());
   #endif
 }
 

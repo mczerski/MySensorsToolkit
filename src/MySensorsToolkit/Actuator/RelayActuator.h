@@ -3,7 +3,7 @@
 #include "ActuatorBase.h"
 #include "Relay.h"
 #include "Switch.h"
-#include "Message.h"
+#include <MySensorsToolkit/Message.h>
 
 namespace mys_toolkit {
 

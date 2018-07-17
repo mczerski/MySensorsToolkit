@@ -1,9 +1,9 @@
 #pragma once
 
 #include "ActuatorBase.h"
-#include "Message.h"
 #include "Dimmer.h"
 #include "Switch.h"
+#include <MySensorsToolkit/Message.h>
 
 namespace mys_toolkit {
 

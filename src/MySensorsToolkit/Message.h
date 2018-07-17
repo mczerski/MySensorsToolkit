@@ -12,6 +12,11 @@ enum MessageState {
   WAITING_TO_SEND
 };
 
+struct SendAllResult {
+  uint8_t success : 1;
+  uint8_t somethingSent : 1;
+};
+
 class Message
 {
   static constexpr int MAX_MESSAGES = 10;
@@ -25,13 +30,15 @@ public:
   Message(uint8_t sensor, uint8_t type);
   static void setSent(const MyMessage& msg);
   static void update();
+  static SendAllResult sendAll();
   template <typename ValueType>
   void send(ValueType value)
   {
     state_ = WAITING_TO_SEND;
     setMessageValue(msg_, value);
   }
-  const MyMessage& getMyMessage();
+  uint8_t getSensor() const;
+  uint8_t getType() const;
 };
 
 } //mys_toolkit

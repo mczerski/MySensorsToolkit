@@ -9,7 +9,7 @@ void RelayActuator::sendCurrentState_()
   Serial.print("sendCurrentState ");
   Serial.print(relay_.getState());
   Serial.print(" for child id ");
-  Serial.println(lightMsg_.getMyMessage().sensor);
+  Serial.println(lightMsg_.getSensor());
   #endif
 }
 

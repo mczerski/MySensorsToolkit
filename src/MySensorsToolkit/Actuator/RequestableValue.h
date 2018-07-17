@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ActuatorBase.h"
-#include "Message.h"
+#include <MySensorsToolkit/Message.h>
 #include <MySensorsToolkit/Duration.h>
 
 namespace mys_toolkit {

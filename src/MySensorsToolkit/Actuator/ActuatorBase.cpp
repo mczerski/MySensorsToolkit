@@ -1,5 +1,5 @@
 #include "ActuatorBase.h"
-#include "Message.h"
+#include <MySensorsToolkit/Message.h>
 #include <MySensorsToolkit/MySensors.h>
 #include <MySensorsToolkit/utils.h>
 

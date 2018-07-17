@@ -24,7 +24,7 @@ void SceneController::sendScene_(uint8_t scene)
   Serial.print("sendScene_ ");
   Serial.print(scene);
   Serial.print(" for child id ");
-  Serial.println(sceneMsg_.getMyMessage().sensor);
+  Serial.println(sceneMsg_.getSensor());
   #endif
 }
 

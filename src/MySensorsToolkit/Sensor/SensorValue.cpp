@@ -5,7 +5,7 @@ namespace mys_toolkit {
 
 void SensorValueBase::present_()
 {
-  ::present(sensorId_, sensorType_);
+  ::present(msg_.getSensor(), sensorType_);
 }
 
 void SensorValueBase::forceResend_()
@@ -14,7 +14,7 @@ void SensorValueBase::forceResend_()
 }
 
 SensorValueBase::SensorValueBase(uint8_t sensorId, uint8_t type, uint8_t sensorType)
-  : msg_(sensorId, type), noUpdates_(0), sensorId_(sensorId), sensorType_(sensorType)
+  : msg_(sensorId, type), noUpdates_(0), sensorType_(sensorType)
 {
   if (valuesCount_ < MAX_VALUES)
     values_[valuesCount_++] = this;
@@ -32,30 +32,7 @@ void SensorValueBase::forceResend()
     values_[i]->forceResend_();
 }
 
-void SensorValueBase::beforeUpdate()
-{
-  success_ = true;
-  somethingSent_ = false;
-}
-
-void SensorValueBase::update(bool success, bool somethingSent)
-{
-  success_ &= success;
-  somethingSent_ |= somethingSent;
-}
-
-bool SensorValueBase::wasSuccess()
-{
-  return success_;
-}
-
-bool SensorValueBase::wasSomethingSent() {
-  return somethingSent_;
-}
-
 uint8_t SensorValueBase::valuesCount_ = 0;
 SensorValueBase* SensorValueBase::values_[];
-bool SensorValueBase::success_ = true;
-bool SensorValueBase::somethingSent_ = false;
 
 } //mys_toolkit
