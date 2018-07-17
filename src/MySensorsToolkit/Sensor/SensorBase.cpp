@@ -108,6 +108,8 @@ void SensorBase::update()
     }
   }
   bool success = SensorValueBase::wasSuccess();
+  if (minWait == static_cast<unsigned long>(-1))
+    minWait = SLEEP_TIME;
 
   PowerManager::getInstance().reportBatteryLevel();
   unsigned long sleepTimeout = getSleepTimeout_(success, minWait);
@@ -118,15 +120,17 @@ void SensorBase::update()
     PowerManager::getInstance().turnBoosterOff();
 
   int wakeUpCause;
-  auto smartSleep = SensorValueBase::wasSomethingSent();
+  static bool wakeupFromButton = false;
+  auto smartSleep = buttonPin_ != MYS_TOOLKIT_INTERRUPT_NOT_DEFINED ? wakeupFromButton : SensorValueBase::wasSomethingSent();
   if (buttonPin_ == MYS_TOOLKIT_INTERRUPT_NOT_DEFINED)
     wakeUpCause = sleep(digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout, smartSleep);
   else
     wakeUpCause = sleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout, smartSleep);
-
+  wakeupFromButton = false;
   if (buttonPin_ != MYS_TOOLKIT_INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(buttonPin_)) {
     digitalWrite(ledPin_, LOW);
     SensorValueBase::forceResend();
+    wakeupFromButton = true;
     #ifdef MYS_TOOLKIT_DEBUG
     Serial.println("Wake up from button");
     #endif
