@@ -27,12 +27,10 @@ uint8_t loadState(const uint8_t pos)
   return ::loadState(pos);
 }
 
-#ifdef MYS_TOOLKIT_DEBUG
 void logMsg(const char * const text)
 {
   static MyMessage msg(254, S_INFO);
   send(msg.set(text));
 }
-#endif
 
 } //mys_toolkit

@@ -70,6 +70,9 @@ void PowerManager::setBatteryPin(uint8_t batteryPin, bool liIonBattery)
   batteryPin_ = batteryPin;
   liIonBattery_ = liIonBattery;
   analogReference(INTERNAL);
+  //this is to give adc time to setup reference voltage
+  analogRead(batteryPin_);
+  delay(7);
 }
 
 void PowerManager::turnBoosterOn()
