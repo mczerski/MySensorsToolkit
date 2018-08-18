@@ -12,7 +12,6 @@ class DimmerActuator : public ActuatorBase
   Dimmer &dim_;
   Switch &sw_;
   Message dimmerMsg_;
-  Message lightMsg_;
   static uint8_t fromPercentage_(uint8_t percentage);
   static uint8_t fromLevel_(uint8_t level);
   void sendCurrentLevel_();

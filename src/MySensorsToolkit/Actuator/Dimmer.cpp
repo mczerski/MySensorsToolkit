@@ -41,7 +41,13 @@ void Dimmer::handleDimming_()
     }
     if (currentLevel_ <= requestedLevel_) {
       currentLevel_ = requestedLevel_;
-      state_ = OFF;
+      if (currentLevel_) {
+        lastLevel_ = requestedLevel_;
+        state_ = ON;
+      }
+      else {
+        state_ = OFF;
+      }
     }
   }
   else if (state_ == DIMMING_UP) {

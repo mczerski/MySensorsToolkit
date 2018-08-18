@@ -5,9 +5,10 @@ namespace mys_toolkit {
 
 void Message::send_(Message &msg)
 {
-  msg.sendTime_ = millis();
-  if (::send(msg.msg_, true))
+  if (::send(msg.msg_, false)) {
+    msg.state_ = SENT;
     return;
+  }
   #ifdef MYS_TOOLKIT_DEBUG
   Serial.print("Message: failed to send ");
   Serial.print("t=");
@@ -38,17 +39,16 @@ void Message::update()
   for (int i=0; i<messagesNum_; i++) {
     Message &msg = *messages_[i];
     if (msg.state_ == WAITING_FOR_ACK) {
-      if (millis() - msg.sendTime_ > 2000) {
-        #ifdef MYS_TOOLKIT_DEBUG
-        Serial.print("Message: resending ");
-        Serial.print("t=");
-        Serial.print(msg.getType());
-        Serial.print(",c=");
-        Serial.println(msg.getSensor());
-        #endif
-        send_(msg);
-      }
-      return;
+      #ifdef MYS_TOOLKIT_DEBUG
+      Serial.print("Message: resending ");
+      Serial.print("t=");
+      Serial.print(msg.getType());
+      Serial.print(",c=");
+      Serial.println(msg.getSensor());
+      #endif
+      send_(msg);
+      if (msg.state_ == WAITING_FOR_ACK)
+        return;
     }
   }
   for (int i=0; i<messagesNum_; i++) {

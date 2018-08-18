@@ -15,7 +15,6 @@ uint8_t DimmerActuator::fromLevel_(uint8_t level)
 void DimmerActuator::sendCurrentLevel_()
 {
   uint8_t percentage = fromLevel_(dim_.getLevel());
-  lightMsg_.send(percentage > 0 ? 1 : 0);
   dimmerMsg_.send(percentage);
   #ifdef MYS_TOOLKIT_DEBUG
   Serial.print("sendCurrentLevel ");
@@ -41,28 +40,18 @@ void DimmerActuator::receive_(const MyMessage &message)
   if (mGetCommand(message) == C_REQ) {
     sendCurrentLevel_();
   }
-  else if (mGetCommand(message) == C_SET) {
+  else if (mGetCommand(message) == C_SET and message.type == V_DIMMER) {
     //  Retrieve the power or dim level from the incoming request message
     int requestedValue = atoi(message.data);
 
-    if (message.type == V_DIMMER) {    
+    if (requestedValue == 255) {
+      dim_.set(true);
+    }
+    else {
       // Clip incoming level to valid range of 0 to 100
       requestedValue = requestedValue > 100 ? 100 : requestedValue;
       requestedValue = requestedValue < 0   ? 0   : requestedValue;
-
-      #ifdef MYS_TOOLKIT_DEBUG
-      Serial.print("Changing dimmer [");
-      Serial.print(message.sensor);
-      Serial.print("] level to ");
-      Serial.print(requestedValue);
-      Serial.print( ", from " );
-      Serial.println(fromLevel_(dim_.getLevel()));
-      #endif
-
       dim_.request(fromPercentage_(requestedValue));
-    }
-    else if (message.type == V_STATUS) {
-      dim_.set(requestedValue);
     }
   }
 }
@@ -71,8 +60,7 @@ DimmerActuator::DimmerActuator(uint8_t sensorId, Dimmer &dim, Switch &sw)
   : ActuatorBase(sensorId, S_DIMMER),
     dim_(dim),
     sw_(sw),
-    dimmerMsg_(sensorId, V_DIMMER),
-    lightMsg_(sensorId, V_STATUS)
+    dimmerMsg_(sensorId, V_DIMMER)
 {}
 
 } //mys_toolkit

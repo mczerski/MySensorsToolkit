@@ -21,7 +21,6 @@ class Message
 {
   static constexpr int MAX_MESSAGES = 10;
   MyMessage msg_;
-  unsigned long sendTime_ = 0;
   MessageState state_ = SENT;
   static Message* messages_[MAX_MESSAGES];
   static int messagesNum_;
