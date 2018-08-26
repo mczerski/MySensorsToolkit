@@ -67,7 +67,7 @@ SendAllResult Message::sendAll()
   for (int i=0; i<messagesNum_; i++) {
     Message &msg = *messages_[i];
     if (msg.state_ == WAITING_TO_SEND) {
-      if (sendAndWait(msg.msg_, 2000)) {
+      if (::send(msg.msg_, false)) {
         msg.state_ = SENT;
         result.somethingSent = 1;
       }
