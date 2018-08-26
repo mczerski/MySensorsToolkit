@@ -61,8 +61,10 @@ PowerManager& PowerManager::getInstance()
 void PowerManager::setupPowerBoost(uint8_t powerBoostPin,  bool initialBoostOn)
 {
   powerBoostPin_ = powerBoostPin;
-  pinMode(powerBoostPin_, OUTPUT);
-  digitalWrite(powerBoostPin_, initialBoostOn);
+  if (powerBoostPin_ != static_cast<uint8_t>(-1)) {
+    pinMode(powerBoostPin_, OUTPUT);
+    digitalWrite(powerBoostPin_, initialBoostOn);
+  }
 }
 
 void PowerManager::setBatteryPin(uint8_t batteryPin, bool liIonBattery)
@@ -77,12 +79,14 @@ void PowerManager::setBatteryPin(uint8_t batteryPin, bool liIonBattery)
 
 void PowerManager::turnBoosterOn()
 {
-  digitalWrite(powerBoostPin_, HIGH);
+  if (powerBoostPin_ != static_cast<uint8_t>(-1))
+    digitalWrite(powerBoostPin_, HIGH);
 }
 
 void PowerManager::turnBoosterOff()
 {
-  digitalWrite(powerBoostPin_, LOW);
+  if (powerBoostPin_ != static_cast<uint8_t>(-1))
+    digitalWrite(powerBoostPin_, LOW);
 }
 
 void PowerManager::reportBatteryLevel()
