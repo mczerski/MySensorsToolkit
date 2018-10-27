@@ -4,17 +4,24 @@ namespace mys_toolkit {
 
 class Relay
 {
-  bool state_;
-  bool prevSwState_;
-  int relayPin_;
+  bool state_ = false;
+  bool prevSwState_ = false;
   bool isRising_(bool swState);
-  void updateRelayPin_();
-
+  virtual void updateState_(bool state) = 0;
+  virtual void update_() {}
 public:
-  Relay(int relayPin);
   bool update(bool currSwState);
   bool getState();
   void set(bool state);
+};
+
+class GPIORelay : public Relay
+{
+  int relayPin_;
+  void updateState_(bool state) override;
+
+public:
+  GPIORelay(int relayPin);
 };
 
 } //mys_toolkit

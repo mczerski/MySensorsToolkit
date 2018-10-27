@@ -9,17 +9,9 @@ bool Relay::isRising_(bool swState)
   return swState == true and prevSwState_ == false;
 }
 
-void Relay::updateRelayPin_()
+bool Relay::getState()
 {
-  digitalWrite(relayPin_, !state_);
-}
-
-Relay::Relay(int relayPin)
-  : state_(false),
-    prevSwState_(false),
-    relayPin_(relayPin)
-{
-  pinMode(relayPin_, OUTPUT);
+  return state_;
 }
 
 bool Relay::update(bool currSwState)
@@ -28,21 +20,32 @@ bool Relay::update(bool currSwState)
   if (isRising_(currSwState)) {
     state_ = not state_;
     retVal = true;
+    updateState_(state_);
+  }
+  else {
+    update_();
   }
   prevSwState_ = currSwState;
-  updateRelayPin_();
   return retVal;
-}
-
-bool Relay::getState()
-{
-  return state_;
 }
 
 void Relay::set(bool state)
 {
   state_ = state;
-  updateRelayPin_();
+  updateState_(state_);
+}
+
+
+void GPIORelay::updateState_(bool state)
+{
+  digitalWrite(relayPin_, !state);
+}
+
+GPIORelay::GPIORelay(int relayPin)
+  : relayPin_(relayPin)
+{
+  pinMode(relayPin_, OUTPUT);
+  updateState_(getState());
 }
 
 } //mys_toolkit
