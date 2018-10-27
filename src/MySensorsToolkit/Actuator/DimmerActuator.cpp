@@ -24,6 +24,11 @@ void DimmerActuator::sendCurrentLevel_()
   #endif
 }
 
+void DimmerActuator::begin_()
+{
+  dim_.begin();
+}
+
 void DimmerActuator::firstUpdate_()
 {
   sendCurrentLevel_();

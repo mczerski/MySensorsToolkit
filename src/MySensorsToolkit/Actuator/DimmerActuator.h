@@ -15,6 +15,7 @@ class DimmerActuator : public ActuatorBase
   static uint8_t fromPercentage_(uint8_t percentage);
   static uint8_t fromLevel_(uint8_t level);
   void sendCurrentLevel_();
+  void begin_() override;
   void firstUpdate_() override;
   void update_() override;
   void receive_(const MyMessage &message) override;

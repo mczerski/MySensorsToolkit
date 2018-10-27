@@ -10,6 +10,7 @@ class Relay
   virtual void updateState_(bool state) = 0;
   virtual void update_() {}
 public:
+  virtual void begin() {};
   bool update(bool currSwState);
   bool getState();
   void set(bool state);

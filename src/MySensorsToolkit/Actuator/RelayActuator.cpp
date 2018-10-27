@@ -13,6 +13,11 @@ void RelayActuator::sendCurrentState_()
   #endif
 }
 
+void RelayActuator::begin_()
+{
+  relay_.begin();
+}
+
 void RelayActuator::firstUpdate_()
 {
   sendCurrentState_();

@@ -52,6 +52,7 @@ protected:
 public:
   Dimmer(bool inverted, uint8_t dimmSpeed, Functions functions);
   virtual ~Dimmer();
+  virtual void begin() {};
   bool update(bool value);
   void request(uint8_t value);
   void set(bool on);

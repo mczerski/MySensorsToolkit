@@ -13,6 +13,7 @@ class RelayActuator : public ActuatorBase
   Switch &sw_;
   Message lightMsg_;
   void sendCurrentState_();
+  void begin_() override;
   void firstUpdate_() override;
   void update_() override;
   void receive_(const MyMessage &message) override;
