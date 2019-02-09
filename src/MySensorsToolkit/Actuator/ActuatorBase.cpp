@@ -59,7 +59,6 @@ void ActuatorBase::update()
 void ActuatorBase::receive(const MyMessage &message)
 {
   if (message.isAck()) {
-    Message::setSent(message);
     return;
   }
   for (size_t i=0; i<sensorsCount_; i++)

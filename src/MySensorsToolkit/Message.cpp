@@ -3,11 +3,11 @@
 
 namespace mys_toolkit {
 
-void Message::send_(Message &msg)
+bool Message::send_(Message &msg)
 {
   if (::send(msg.msg_, false)) {
     msg.state_ = SENT;
-    return;
+    return true;
   }
   #ifdef MYS_TOOLKIT_DEBUG
   Serial.print("Message: failed to send ");
@@ -16,6 +16,7 @@ void Message::send_(Message &msg)
   Serial.print(",c=");
   Serial.println(msg.getSensor());
   #endif
+  return false;
 }
 
 Message::Message(uint8_t sensor, uint8_t type)
@@ -26,35 +27,11 @@ Message::Message(uint8_t sensor, uint8_t type)
   }
 }
 
-void Message::setSent(const MyMessage& msg)
-{
-  for (int i=0; i<messagesNum_; i++) {
-    if (messages_[i]->getSensor() == msg.sensor and messages_[i]->getType() == msg.type)
-      messages_[i]->state_ = SENT;
-  }
-}
-
 void Message::update()
 {
   for (int i=0; i<messagesNum_; i++) {
     Message &msg = *messages_[i];
-    if (msg.state_ == WAITING_FOR_ACK) {
-      #ifdef MYS_TOOLKIT_DEBUG
-      Serial.print("Message: resending ");
-      Serial.print("t=");
-      Serial.print(msg.getType());
-      Serial.print(",c=");
-      Serial.println(msg.getSensor());
-      #endif
-      send_(msg);
-      if (msg.state_ == WAITING_FOR_ACK)
-        return;
-    }
-  }
-  for (int i=0; i<messagesNum_; i++) {
-    Message &msg = *messages_[i];
     if (msg.state_ == WAITING_TO_SEND) {
-      msg.state_ = WAITING_FOR_ACK;
       send_(msg);
       return;
     }
@@ -67,8 +44,7 @@ SendAllResult Message::sendAll()
   for (int i=0; i<messagesNum_; i++) {
     Message &msg = *messages_[i];
     if (msg.state_ == WAITING_TO_SEND) {
-      if (::send(msg.msg_, false)) {
-        msg.state_ = SENT;
+      if (send_(msg)) {
         result.somethingSent = 1;
       }
       else {

@@ -8,7 +8,6 @@ namespace mys_toolkit {
 
 enum MessageState {
   SENT,
-  WAITING_FOR_ACK,
   WAITING_TO_SEND
 };
 
@@ -24,10 +23,9 @@ class Message
   MessageState state_ = SENT;
   static Message* messages_[MAX_MESSAGES];
   static int messagesNum_;
-  static void send_(Message &msg);
+  static bool send_(Message &msg);
 public:
   Message(uint8_t sensor, uint8_t type);
-  static void setSent(const MyMessage& msg);
   static void update();
   static SendAllResult sendAll();
   template <typename ValueType>
