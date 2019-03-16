@@ -14,6 +14,7 @@ public:
   duration_ms_t getMilis() const;
   duration_ms_t get() const;
   bool operator<(const Duration &other);
+  bool operator<=(const Duration &other);
   void operator+=(const Duration &other);
   void operator*=(int factor);
   Duration operator+(const Duration &other);
