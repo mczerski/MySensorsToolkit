@@ -8,6 +8,12 @@
                     
 namespace mys_toolkit {
 
+void SensorBase::setLed_(uint8_t value)
+{
+  if (ledPin_ != uint8_t(-1))
+    digitalWrite(ledPin_, value);
+}
+
 bool SensorBase::begin_()
 {
   return true;
@@ -71,8 +77,9 @@ void SensorBase::begin(uint8_t batteryPin, bool liIonBattery, uint8_t powerBoost
   }
 
   ledPin_ = ledPin;
-  pinMode(ledPin_, OUTPUT);
-  digitalWrite(ledPin_, LOW);
+  if (ledPin_ != uint8_t(-1))
+    pinMode(ledPin_, OUTPUT);
+  setLed_(LOW);
 
   PowerManager::getInstance().setupPowerBoost(powerBoostPin, initialBoostOn or alwaysBoostOn_);
   PowerManager::getInstance().setBatteryPin(batteryPin, liIonBattery);
@@ -113,7 +120,7 @@ void SensorBase::update()
 
   unsigned long sleepTimeout = getSleepTimeout_(result.success, minWait);
 
-  digitalWrite(ledPin_, HIGH);
+  setLed_(HIGH);
 
   if (not alwaysBoostOn_)
     PowerManager::getInstance().turnBoosterOff();
@@ -127,7 +134,7 @@ void SensorBase::update()
     wakeUpCause = sleep(digitalPinToInterrupt(buttonPin_), FALLING, digitalPinToInterrupt(interruptPin_), interruptMode_, sleepTimeout, smartSleep);
   wakeupFromButton = false;
   if (buttonPin_ != MYS_TOOLKIT_INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(buttonPin_)) {
-    digitalWrite(ledPin_, LOW);
+    setLed_(LOW);
     SensorValueBase::forceResend();
     wakeupFromButton = true;
     #ifdef MYS_TOOLKIT_DEBUG
@@ -135,7 +142,7 @@ void SensorBase::update()
     #endif
   }
   else if (interruptPin_ != MYS_TOOLKIT_INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(interruptPin_)) {
-    digitalWrite(ledPin_, LOW);
+    setLed_(LOW);
     #ifdef MYS_TOOLKIT_DEBUG
     Serial.println("Wake up from sensor");
     #endif

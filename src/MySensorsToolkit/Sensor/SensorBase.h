@@ -21,6 +21,7 @@ class SensorBase {
   static unsigned long now_;
   static unsigned long lastUpdate_;
   bool initialised_ = false;
+  static void setLed_(uint8_t value);
 
   virtual bool begin_();
   virtual unsigned long preUpdate_();
@@ -39,7 +40,7 @@ public:
   static void present();
   static void begin(uint8_t batteryPin = -1, bool liIonBattery = false, uint8_t powerBoostPin = -1,
                     bool initialBoostOn = false, bool alwaysBoostOn = false, uint8_t buttonPin = MYS_TOOLKIT_INTERRUPT_NOT_DEFINED,
-                    uint8_t ledPin = 0);
+                    uint8_t ledPin = -1);
   static void update();
   static void receive(const MyMessage &message);
 };
