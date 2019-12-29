@@ -29,7 +29,7 @@ uint8_t loadState(const uint8_t pos)
 
 void logMsg(const char * const text)
 {
-  static MyMessage msg(254, S_INFO);
+  static MyMessage msg(254, V_TEXT);
   send(msg.set(text));
 }
 
