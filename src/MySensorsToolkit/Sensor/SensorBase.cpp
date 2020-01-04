@@ -135,7 +135,7 @@ void SensorBase::update()
   wakeupFromButton = false;
   if (buttonPin_ != MYS_TOOLKIT_INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(buttonPin_)) {
     setLed_(LOW);
-    SensorValueBase::forceResend();
+    SensorValueBase::forceResendAll();
     wakeupFromButton = true;
     #ifdef MYS_TOOLKIT_DEBUG
     Serial.println("Wake up from button");
