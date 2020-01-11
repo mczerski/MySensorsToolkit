@@ -46,8 +46,11 @@ void ActuatorBase::update()
 {
   timer_.update();
   Message::update();
-  for (size_t i=0; i<sensorsCount_; i++)
+  wait(10); //allow MySensors to kickin
+  for (size_t i=0; i<sensorsCount_; i++) {
     sensors_[i]->update_();
+    wait(10); //allow MySensors to kickin
+  }
   if (not loopCalled_) {
     checkTransport();
     for (size_t i=0; i<sensorsCount_; i++)
