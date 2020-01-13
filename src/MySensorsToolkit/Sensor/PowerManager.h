@@ -12,15 +12,23 @@ class PowerManager {
   uint8_t lastBatteryLevel_ = -1;
   uint8_t noUpdatesBatteryLevel_ = 0;
   bool liIonBattery_ = false;
+  bool alwaysBoost_ = false;
+  bool lowVoltageBoost_ = false;
+  enum State {
+      NORMAL,
+      LOW_VOLTAGE_BOOST
+  };
+  State state_ = NORMAL;
   static PowerManager instance_;
   PowerManager();
   void handleBatteryLevel_(uint8_t value);
+  void handleLowVoltageState_();
 public:
   static PowerManager& getInstance();
-  void setupPowerBoost(uint8_t powerBoostPin = -1,  bool initialBoostOn = false);
+  void setupPowerBoost(uint8_t powerBoostPin = -1,  bool initialBoostOn = false, bool alwaysBoost = false, bool lowVoltageBoost = false);
   void setBatteryPin(uint8_t batteryPin, bool liIonBattery = false);
-  void turnBoosterOn();
-  void turnBoosterOff();
+  void enterUpdate();
+  void exitUpdate();
   void reportBatteryLevel();
   void forceResend();
 };

@@ -15,7 +15,6 @@ class SensorBase {
   static uint8_t ledPin_;
   static uint8_t interruptPin_;
   static uint8_t interruptMode_;
-  static bool alwaysBoostOn_;
   static const uint8_t N_RETRIES = 14;
   static const unsigned long UPDATE_INTERVAL = 1000;
   static unsigned long now_;
@@ -39,8 +38,8 @@ public:
   SensorBase();
   static void present();
   static void begin(uint8_t batteryPin = -1, bool liIonBattery = false, uint8_t powerBoostPin = -1,
-                    bool initialBoostOn = false, bool alwaysBoostOn = false, uint8_t buttonPin = MYS_TOOLKIT_INTERRUPT_NOT_DEFINED,
-                    uint8_t ledPin = -1);
+                    bool initialBoost = false, bool alwaysBoost = false, bool lowVoltageBoost = false,
+                    uint8_t buttonPin = MYS_TOOLKIT_INTERRUPT_NOT_DEFINED, uint8_t ledPin = -1);
   static void update();
   static void receive(const MyMessage &message);
 };

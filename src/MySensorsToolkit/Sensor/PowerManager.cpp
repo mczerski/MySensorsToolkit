@@ -53,17 +53,31 @@ void PowerManager::handleBatteryLevel_(uint8_t value)
   }
 }
 
+void PowerManager::handleLowVoltageState_()
+{
+  auto voltage = convert2mV(analogRead(batteryPin_));
+  if (state_ == NORMAL and voltage < 2600)
+    state_ = LOW_VOLTAGE_BOOST;
+  else if (state_ == LOW_VOLTAGE_BOOST and voltage >= 2800)
+    state_ = NORMAL;
+}
+
 PowerManager& PowerManager::getInstance()
 {
   return instance_;
 }
 
-void PowerManager::setupPowerBoost(uint8_t powerBoostPin,  bool initialBoostOn)
+void PowerManager::setupPowerBoost(uint8_t powerBoostPin,  bool initialBoost, bool alwaysBoost, bool lowVoltageBoost)
 {
   powerBoostPin_ = powerBoostPin;
+  alwaysBoost_ = alwaysBoost;
+  lowVoltageBoost_ = lowVoltageBoost;
+  if (batteryPin_ != static_cast<uint8_t>(-1) and lowVoltageBoost_) {
+    handleLowVoltageState_();
+  }
   if (powerBoostPin_ != static_cast<uint8_t>(-1)) {
     pinMode(powerBoostPin_, OUTPUT);
-    digitalWrite(powerBoostPin_, initialBoostOn);
+    digitalWrite(powerBoostPin_, initialBoost or alwaysBoost or state_ == LOW_VOLTAGE_BOOST ? HIGH : LOW);
   }
 }
 
@@ -77,15 +91,32 @@ void PowerManager::setBatteryPin(uint8_t batteryPin, bool liIonBattery)
   delay(7);
 }
 
-void PowerManager::turnBoosterOn()
+void PowerManager::enterUpdate()
 {
-  if (powerBoostPin_ != static_cast<uint8_t>(-1))
+  if (powerBoostPin_ == static_cast<uint8_t>(-1) or alwaysBoost_)
+      return;
+
+  if (lowVoltageBoost_) {
+    handleLowVoltageState_();
+    digitalWrite(powerBoostPin_, state_ == LOW_VOLTAGE_BOOST ? HIGH : LOW);
+  }
+  else
     digitalWrite(powerBoostPin_, HIGH);
+  //wait for everything to setup (100ms for dc/dc converter)
+  wait(100);
 }
 
-void PowerManager::turnBoosterOff()
+void PowerManager::exitUpdate()
 {
-  if (powerBoostPin_ != static_cast<uint8_t>(-1))
+  if (powerBoostPin_ == static_cast<uint8_t>(-1) or alwaysBoost_)
+    return;
+
+
+  if (lowVoltageBoost_) {
+    handleLowVoltageState_();
+    digitalWrite(powerBoostPin_, state_ == LOW_VOLTAGE_BOOST ? HIGH : LOW);
+  }
+  else
     digitalWrite(powerBoostPin_, LOW);
 }
 

@@ -68,9 +68,9 @@ void SensorBase::present()
   ParameterBase::present();
 }
 void SensorBase::begin(uint8_t batteryPin, bool liIonBattery, uint8_t powerBoostPin,
-                              bool initialBoostOn, bool alwaysBoostOn, uint8_t buttonPin, uint8_t ledPin)
+                       bool initialBoost, bool alwaysBoost, bool lowVoltageBoost,
+                       uint8_t buttonPin, uint8_t ledPin)
 {
-  alwaysBoostOn_ = alwaysBoostOn;
   if (buttonPin != uint8_t(-1)) {
     buttonPin_ = buttonPin;
     pinMode(buttonPin_, INPUT_PULLUP);
@@ -81,19 +81,15 @@ void SensorBase::begin(uint8_t batteryPin, bool liIonBattery, uint8_t powerBoost
     pinMode(ledPin_, OUTPUT);
   setLed_(LOW);
 
-  PowerManager::getInstance().setupPowerBoost(powerBoostPin, initialBoostOn or alwaysBoostOn_);
   PowerManager::getInstance().setBatteryPin(batteryPin, liIonBattery);
+  PowerManager::getInstance().setupPowerBoost(powerBoostPin, initialBoost, alwaysBoost, lowVoltageBoost);
   for (size_t i=0; i<sensorsCount_; i++)
     sensors_[i]->initialised_ = sensors_[i]->begin_();
 }
 
 void SensorBase::update()
 {
-  if (not alwaysBoostOn_) {
-    PowerManager::getInstance().turnBoosterOn();
-    //wait for everything to setup (100ms for dc/dc converter)
-    wait(100);
-  }
+  PowerManager::getInstance().enterUpdate();
 
   unsigned long maxWait = 0;
   for (size_t i=0; i<sensorsCount_; i++) {
@@ -122,8 +118,7 @@ void SensorBase::update()
 
   setLed_(HIGH);
 
-  if (not alwaysBoostOn_)
-    PowerManager::getInstance().turnBoosterOff();
+  PowerManager::getInstance().exitUpdate();
 
   int wakeUpCause;
   static bool wakeupFromButton = false;
@@ -160,6 +155,5 @@ uint8_t SensorBase::buttonPin_ = MYS_TOOLKIT_INTERRUPT_NOT_DEFINED;
 uint8_t SensorBase::ledPin_;
 uint8_t SensorBase::interruptPin_ = MYS_TOOLKIT_INTERRUPT_NOT_DEFINED;
 uint8_t SensorBase::interruptMode_ = MYS_TOOLKIT_MODE_NOT_DEFINED;
-bool SensorBase::alwaysBoostOn_ = false;
 
 } //mys_toolkit
