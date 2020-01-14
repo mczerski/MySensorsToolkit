@@ -5,6 +5,8 @@
 
 #include <SoftTimer.h>
 
+void _process(void);
+
 namespace mys_toolkit {
 
 void ActuatorBase::begin_()
@@ -46,10 +48,10 @@ void ActuatorBase::update()
 {
   timer_.update();
   Message::update();
-  wait(10); //allow MySensors to kickin
+  _process(); //allow MySensors to kickin
   for (size_t i=0; i<sensorsCount_; i++) {
     sensors_[i]->update_();
-    wait(10); //allow MySensors to kickin
+    _process(); //allow MySensors to kickin
   }
   if (not loopCalled_) {
     checkTransport();
