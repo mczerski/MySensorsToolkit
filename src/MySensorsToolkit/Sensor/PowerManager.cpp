@@ -55,6 +55,9 @@ void PowerManager::handleBatteryLevel_(uint8_t value)
 
 void PowerManager::handleLowVoltageState_()
 {
+  if (batteryPin_ == static_cast<uint8_t>(-1))
+    return;
+
   auto voltage = convert2mV(analogRead(batteryPin_));
   if (state_ == NORMAL and voltage < 2600)
     state_ = LOW_VOLTAGE_BOOST;
@@ -72,9 +75,7 @@ void PowerManager::setupPowerBoost(uint8_t powerBoostPin,  bool initialBoost, bo
   powerBoostPin_ = powerBoostPin;
   alwaysBoost_ = alwaysBoost;
   lowVoltageBoost_ = lowVoltageBoost;
-  if (batteryPin_ != static_cast<uint8_t>(-1) and lowVoltageBoost_) {
-    handleLowVoltageState_();
-  }
+  handleLowVoltageState_();
   if (powerBoostPin_ != static_cast<uint8_t>(-1)) {
     pinMode(powerBoostPin_, OUTPUT);
     digitalWrite(powerBoostPin_, initialBoost or alwaysBoost or state_ == LOW_VOLTAGE_BOOST ? HIGH : LOW);
@@ -86,9 +87,11 @@ void PowerManager::setBatteryPin(uint8_t batteryPin, bool liIonBattery)
   batteryPin_ = batteryPin;
   liIonBattery_ = liIonBattery;
   analogReference(INTERNAL);
-  //this is to give adc time to setup reference voltage
-  analogRead(batteryPin_);
-  delay(7);
+  if (batteryPin_ != static_cast<uint8_t>(-1)) {
+    //this is to give adc time to setup reference voltage
+    analogRead(batteryPin_);
+    delay(7);
+  }
 }
 
 void PowerManager::enterUpdate()
@@ -111,18 +114,13 @@ void PowerManager::exitUpdate()
   if (powerBoostPin_ == static_cast<uint8_t>(-1) or alwaysBoost_)
     return;
 
-
-  if (lowVoltageBoost_) {
-    handleLowVoltageState_();
-    digitalWrite(powerBoostPin_, state_ == LOW_VOLTAGE_BOOST ? HIGH : LOW);
-  }
-  else
-    digitalWrite(powerBoostPin_, LOW);
+  handleLowVoltageState_();
+  digitalWrite(powerBoostPin_, state_ == LOW_VOLTAGE_BOOST ? HIGH : LOW);
 }
 
 void PowerManager::reportBatteryLevel()
 {
-  if (batteryPin_ == uint8_t(-1))
+  if (batteryPin_ == static_cast<uint8_t>(-1))
     return;
   int voltage = convert2mV(analogRead(batteryPin_));
   #ifdef MYS_TOOLKIT_DEBUG
