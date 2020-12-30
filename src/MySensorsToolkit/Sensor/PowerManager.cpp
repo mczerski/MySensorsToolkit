@@ -59,9 +59,9 @@ void PowerManager::handleLowVoltageState_()
     return;
 
   auto voltage = convert2mV(analogRead(batteryPin_));
-  if (state_ == NORMAL and voltage < 2600)
+  if (state_ == NORMAL and voltage < 2450)
     state_ = LOW_VOLTAGE_BOOST;
-  else if (state_ == LOW_VOLTAGE_BOOST and voltage >= 2800)
+  else if (state_ == LOW_VOLTAGE_BOOST and voltage >= 2650)
     state_ = NORMAL;
 }
 
