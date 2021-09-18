@@ -86,7 +86,9 @@ void PowerManager::setBatteryPin(uint8_t batteryPin, bool liIonBattery)
 {
   batteryPin_ = batteryPin;
   liIonBattery_ = liIonBattery;
+#if defined(ARDUINO_ARCH_AVR)
   analogReference(INTERNAL);
+#endif
   if (batteryPin_ != static_cast<uint8_t>(-1)) {
     //this is to give adc time to setup reference voltage
     analogRead(batteryPin_);

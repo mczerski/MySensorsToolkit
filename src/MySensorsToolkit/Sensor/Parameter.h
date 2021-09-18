@@ -8,7 +8,7 @@ class ParameterBase {
 protected:
   MyMessage msg_;
   uint8_t sensorId_;
-  uint8_t sensorType_;
+  mysensors_sensor_t sensorType_;
   uint8_t parameterPosition_;
   static uint8_t parametersCount_;
   static constexpr uint8_t MAX_PARAMETERS = 10;
@@ -19,7 +19,7 @@ protected:
   virtual void set_(const MyMessage &message) = 0;
 
 public:
-  ParameterBase(uint8_t sensorId, uint8_t type, uint8_t sensorType);
+  ParameterBase(uint8_t sensorId, mysensors_data_t type, mysensors_sensor_t sensorType);
   static void present();
   static void receive(const MyMessage &message);
 };
@@ -51,7 +51,7 @@ class Parameter : public ParameterBase {
     setMessageValue(msg_, value);
   }
 public:
-  Parameter(uint8_t sensorId, uint8_t type, uint8_t sensorType, ValueType init = 0)
+  Parameter(uint8_t sensorId, mysensors_data_t type, mysensors_sensor_t sensorType, ValueType init = 0)
     : ParameterBase(sensorId, type, sensorType)
   {
     static_assert(sizeof(ValueType) <= sizeof(uint32_t), "MyParameter may be instantiated only with types not grater than 32 bits");

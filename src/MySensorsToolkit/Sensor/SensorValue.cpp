@@ -13,7 +13,7 @@ void SensorValueBase::forceResend()
   forceResend_ = true;
 }
 
-SensorValueBase::SensorValueBase(uint8_t sensorId, uint8_t type, uint8_t sensorType)
+SensorValueBase::SensorValueBase(uint8_t sensorId, mysensors_data_t type, mysensors_sensor_t sensorType)
   : msg_(sensorId, type), sensorType_(sensorType)
 {
   if (valuesCount_ < MAX_VALUES)

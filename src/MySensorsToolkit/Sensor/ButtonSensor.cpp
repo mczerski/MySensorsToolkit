@@ -18,7 +18,7 @@ unsigned long ButtonSensor::update_()
 {
   bool tripped = getTripped_();
   if (not lastState_ and tripped) {
-    sceneMsg_.send(1);
+    sceneMsg_.send<uint8_t>(1);
   }
   lastState_ = tripped;
   return SLEEP_TIME;

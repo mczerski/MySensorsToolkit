@@ -53,7 +53,7 @@ void RequestableValueBase::receive_(const MyMessage &message)
     send();
 }
 
-RequestableValueBase::RequestableValueBase(uint8_t sensorId, uint8_t type, uint8_t sensorType, Duration interval)
+RequestableValueBase::RequestableValueBase(uint8_t sensorId, mysensors_data_t type, mysensors_sensor_t sensorType, Duration interval)
   : ActuatorBase(sensorId, sensorType),
     interval_(interval),
     msg_(sensorId, type)

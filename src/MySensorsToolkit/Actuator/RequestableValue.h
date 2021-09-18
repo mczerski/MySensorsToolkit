@@ -9,7 +9,7 @@ namespace mys_toolkit {
 class RequestableValueBase : public EventBase, public ActuatorBase
 {
   uint8_t childId_;
-  uint8_t sensorType_;
+  mysensors_sensor_t sensorType_;
   Duration interval_;
   void scheduleEvent(boolean (*cb)(EventBase*), Duration delayMs);
   static boolean readValue_(EventBase* event);
@@ -25,7 +25,7 @@ protected:
   Message msg_;
 
 public:
-  RequestableValueBase(uint8_t sensorId, uint8_t type, uint8_t sensorType, Duration interval);
+  RequestableValueBase(uint8_t sensorId, mysensors_data_t type, mysensors_sensor_t sensorType, Duration interval);
 };
 
 template <typename ValueType>
@@ -44,7 +44,7 @@ class RequestableValue : public RequestableValueBase
   }
   virtual ValueType readValueCb_() = 0;
 public:
-  RequestableValue(uint8_t sensorId, uint8_t type, uint8_t sensorType, Duration interval)
+  RequestableValue(uint8_t sensorId, mysensors_data_t type, mysensors_sensor_t sensorType, Duration interval)
     : RequestableValueBase(sensorId, type, sensorType, interval)
 {
 }

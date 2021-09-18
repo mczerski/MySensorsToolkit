@@ -41,10 +41,15 @@
 #define CLOCK_PRESCALER_128 (0x7)
 #define CLOCK_PRESCALER_256 (0x8)
 
+#if defined(ARDUINO_ARCH_AVR)
 // Initialize global variable.
 static uint8_t __clock_prescaler = (CLKPR & (_BV(CLKPS0) | _BV(CLKPS1) | _BV(CLKPS2) | _BV(CLKPS3)));
+#else
+static uint8_t __clock_prescaler = 0;
+#endif
 
 inline void setClockPrescaler(uint8_t clockPrescaler) {
+#if defined(ARDUINO_ARCH_AVR)
   if (clockPrescaler <= CLOCK_PRESCALER_256) {
     // Disable interrupts.
     uint8_t oldSREG = SREG;
@@ -62,6 +67,7 @@ inline void setClockPrescaler(uint8_t clockPrescaler) {
     // Recopy interrupt register.
     SREG = oldSREG;
   }
+#endif
 }
 
 inline uint8_t getClockPrescaler() {

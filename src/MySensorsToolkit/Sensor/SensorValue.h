@@ -11,7 +11,7 @@ class SensorValueBase {
 protected:
   Message msg_;
   bool forceResend_ = false;
-  uint8_t sensorType_;
+  mysensors_sensor_t sensorType_;
   static uint8_t valuesCount_;
   static constexpr uint8_t MAX_VALUES = 10;
   static SensorValueBase* values_[MAX_VALUES];
@@ -19,7 +19,7 @@ protected:
   void present_();
 
 public:
-  SensorValueBase(uint8_t sensorId, uint8_t type, uint8_t sensorType);
+  SensorValueBase(uint8_t sensorId, mysensors_data_t type, mysensors_sensor_t sensorType);
   static void present();
   void forceResend();
   static void forceResendAll();
@@ -31,7 +31,7 @@ class SensorValue : public SensorValueBase {
   ValueType treshold_;
 
 public:
-  SensorValue(uint8_t sensorId, uint8_t type, uint8_t sensorType, ValueType treshold = 0)
+  SensorValue(uint8_t sensorId, mysensors_data_t type, mysensors_sensor_t sensorType, ValueType treshold = 0)
     : SensorValueBase(sensorId, type, sensorType), lastValue_(-1), treshold_(treshold)  {}
   void update(ValueType value) {
     if (abs(lastValue_ - value) > treshold_ or forceResend_) {

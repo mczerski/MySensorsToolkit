@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <core/MyMessage.h>
 
-extern bool present(const uint8_t sensorId, const uint8_t sensorType, const char *description="",
+extern bool present(const uint8_t sensorId, const mysensors_sensor_t sensorType, const char *description="",
                     const bool ack = false);
 extern bool send(MyMessage &msg, const bool ack = false);
 extern bool sendBatteryLevel(const uint8_t level, const bool ack = false);

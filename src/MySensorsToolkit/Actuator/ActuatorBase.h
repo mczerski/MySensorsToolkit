@@ -12,7 +12,7 @@ class ActuatorBase
   virtual void firstUpdate_();
   virtual void receive_(const MyMessage &);
   uint8_t sensorId_;
-  uint8_t sensorType_;
+  mysensors_sensor_t sensorType_;
   static constexpr uint8_t MAX_SENSORS = 10;
   static uint8_t sensorsCount_;
   static ActuatorBase* sensors_[MAX_SENSORS];
@@ -20,7 +20,7 @@ class ActuatorBase
   static SoftTimer timer_;
 
 public:
-  ActuatorBase(uint8_t sensorId, uint8_t sensorType);
+  ActuatorBase(uint8_t sensorId, mysensors_sensor_t sensorType);
   static void begin();
   static void present();
   static void update();

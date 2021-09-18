@@ -7,7 +7,7 @@ void ParameterBase::present_()
 {
   ::present(sensorId_, sensorType_);
 }
-ParameterBase::ParameterBase(uint8_t sensorId, uint8_t type, uint8_t sensorType)
+ParameterBase::ParameterBase(uint8_t sensorId, mysensors_data_t type, mysensors_sensor_t sensorType)
   : msg_(sensorId+100, type), sensorId_(sensorId+100), sensorType_(sensorType)
 {
   parameterPosition_ = globalParameterPosition_;

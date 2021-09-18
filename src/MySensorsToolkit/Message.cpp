@@ -19,7 +19,7 @@ bool Message::send_(Message &msg)
   return false;
 }
 
-Message::Message(uint8_t sensor, uint8_t type)
+Message::Message(uint8_t sensor, mysensors_data_t type)
   : msg_(sensor, type)
 {
   if (messagesNum_ < MAX_MESSAGES) {

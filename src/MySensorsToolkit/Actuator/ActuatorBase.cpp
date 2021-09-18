@@ -25,7 +25,7 @@ void ActuatorBase::receive_(const MyMessage &)
 {
 }
 
-ActuatorBase::ActuatorBase(uint8_t sensorId, uint8_t sensorType)
+ActuatorBase::ActuatorBase(uint8_t sensorId, mysensors_sensor_t sensorType)
   : sensorId_(sensorId), sensorType_(sensorType)
 {
   if (sensorsCount_ < MAX_SENSORS)

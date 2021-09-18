@@ -25,7 +25,7 @@ class Message
   static int messagesNum_;
   static bool send_(Message &msg);
 public:
-  Message(uint8_t sensor, uint8_t type);
+  Message(uint8_t sensor, mysensors_data_t type);
   static void update();
   static SendAllResult sendAll();
   template <typename ValueType>
