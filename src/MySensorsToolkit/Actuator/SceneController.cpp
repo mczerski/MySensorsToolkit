@@ -1,5 +1,9 @@
 #include "SceneController.h"
 
+#ifdef MYS_TOOLKIT_DEBUG
+extern HardwareSerial MYS_TOOLKIT_SERIAL;
+#endif
+
 namespace mys_toolkit {
 
 bool SceneController::isRising_(bool swState)
@@ -21,10 +25,10 @@ void SceneController::sendScene_(uint8_t scene)
 {
   sceneMsg_.send(scene);
   #ifdef MYS_TOOLKIT_DEBUG
-  Serial.print("sendScene_ ");
-  Serial.print(scene);
-  Serial.print(" for child id ");
-  Serial.println(sceneMsg_.getSensor());
+  MYS_TOOLKIT_SERIAL.print("sendScene_ ");
+  MYS_TOOLKIT_SERIAL.print(scene);
+  MYS_TOOLKIT_SERIAL.print(" for child id ");
+  MYS_TOOLKIT_SERIAL.println(sceneMsg_.getSensor());
   #endif
 }
 

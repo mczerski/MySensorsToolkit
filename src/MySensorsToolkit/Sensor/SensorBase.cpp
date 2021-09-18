@@ -6,6 +6,10 @@
 #include <MySensorsToolkit/Message.h>
 #include <MySensorsToolkit/MySensors.h>
                     
+#ifdef MYS_TOOLKIT_DEBUG
+extern HardwareSerial MYS_TOOLKIT_SERIAL;
+#endif
+
 namespace mys_toolkit {
 
 void SensorBase::setLed_(uint8_t value)
@@ -41,8 +45,8 @@ unsigned long SensorBase::getSleepTimeout_(bool success, unsigned long sleep)
   }
   unsigned long sleepTimeout = consecutiveFails_ ? (1<<(consecutiveFails_-1))*UPDATE_INTERVAL : sleep;
   #ifdef MYS_TOOLKIT_DEBUG
-  Serial.print("Sleep: ");
-  Serial.println(sleepTimeout);
+  MYS_TOOLKIT_SERIAL.print("Sleep: ");
+  MYS_TOOLKIT_SERIAL.println(sleepTimeout);
   wait(500);
   #endif
   return sleepTimeout;
@@ -133,13 +137,13 @@ void SensorBase::update()
     SensorValueBase::forceResendAll();
     wakeupFromButton = true;
     #ifdef MYS_TOOLKIT_DEBUG
-    Serial.println("Wake up from button");
+    MYS_TOOLKIT_SERIAL.println("Wake up from button");
     #endif
   }
   else if (interruptPin_ != MYS_TOOLKIT_INTERRUPT_NOT_DEFINED and wakeUpCause == digitalPinToInterrupt(interruptPin_)) {
     setLed_(LOW);
     #ifdef MYS_TOOLKIT_DEBUG
-    Serial.println("Wake up from sensor");
+    MYS_TOOLKIT_SERIAL.println("Wake up from sensor");
     #endif
   }
 }

@@ -5,6 +5,10 @@
 
 #include <core/MyMessage.h>
 
+#ifdef MYS_TOOLKIT_DEBUG
+extern HardwareSerial MYS_TOOLKIT_SERIAL;
+#endif
+
 namespace mys_toolkit {
 
 class SensorValueBase {
@@ -36,14 +40,14 @@ public:
   void update(ValueType value) {
     if (abs(lastValue_ - value) > treshold_ or forceResend_) {
       #ifdef MYS_TOOLKIT_DEBUG
-      Serial.print("t=");
-      Serial.print(msg_.getType());
-      Serial.print(",c=");
-      Serial.print(msg_.getSensor());
-      Serial.print(". last=");
-      Serial.print(lastValue_);
-      Serial.print(", curent=");
-      Serial.print(value);
+      MYS_TOOLKIT_SERIAL.print("t=");
+      MYS_TOOLKIT_SERIAL.print(msg_.getType());
+      MYS_TOOLKIT_SERIAL.print(",c=");
+      MYS_TOOLKIT_SERIAL.print(msg_.getSensor());
+      MYS_TOOLKIT_SERIAL.print(". last=");
+      MYS_TOOLKIT_SERIAL.print(lastValue_);
+      MYS_TOOLKIT_SERIAL.print(", curent=");
+      MYS_TOOLKIT_SERIAL.print(value);
       #endif
       lastValue_ = value;
 

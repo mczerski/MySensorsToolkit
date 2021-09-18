@@ -1,6 +1,10 @@
 #include "PowerManager.h"
 #include <MySensorsToolkit/MySensors.h>
 
+#ifdef MYS_TOOLKIT_DEBUG
+extern HardwareSerial MYS_TOOLKIT_SERIAL;
+#endif
+
 namespace mys_toolkit {
 
 int convert2mV(int v)
@@ -126,8 +130,8 @@ void PowerManager::reportBatteryLevel()
     return;
   int voltage = convert2mV(analogRead(batteryPin_));
   #ifdef MYS_TOOLKIT_DEBUG
-  Serial.print("V: ");
-  Serial.println(voltage);
+  MYS_TOOLKIT_SERIAL.print("V: ");
+  MYS_TOOLKIT_SERIAL.println(voltage);
   #endif
   uint8_t batteryLevel = convertmV2Level(voltage, liIonBattery_);
   handleBatteryLevel_(batteryLevel);

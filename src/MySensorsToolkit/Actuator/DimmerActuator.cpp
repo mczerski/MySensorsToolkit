@@ -1,5 +1,9 @@
 #include "DimmerActuator.h"
 
+#ifdef MYS_TOOLKIT_DEBUG
+extern HardwareSerial MYS_TOOLKIT_SERIAL;
+#endif
+
 namespace mys_toolkit {
 
 uint8_t DimmerActuator::fromPercentage_(uint8_t percentage)
@@ -17,10 +21,10 @@ void DimmerActuator::sendCurrentLevel_()
   uint8_t percentage = fromLevel_(dim_.getLevel());
   dimmerMsg_.send(percentage);
   #ifdef MYS_TOOLKIT_DEBUG
-  Serial.print("sendCurrentLevel ");
-  Serial.print(percentage);
-  Serial.print(" for child id ");
-  Serial.println(lightMsg_.getSensor());
+  MYS_TOOLKIT_SERIAL.print("sendCurrentLevel ");
+  MYS_TOOLKIT_SERIAL.print(percentage);
+  MYS_TOOLKIT_SERIAL.print(" for child id ");
+  MYS_TOOLKIT_SERIAL.println(dimmerMsg_.getSensor());
   #endif
 }
 

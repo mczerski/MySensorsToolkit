@@ -18,8 +18,8 @@ boolean RequestableValueBase::readValue_(EventBase* event)
   RequestableValueBase* value = static_cast<RequestableValueBase*>(event);
   value->updateValueCb_();
   #ifdef MYS_TOOLKIT_DEBUG
-  Serial.print("next measurement: ");
-  Serial.println(value->interval_.getMilis());
+  MYS_TOOLKIT_SERIAL.print("next measurement: ");
+  MYS_TOOLKIT_SERIAL.println(value->interval_.getMilis());
   #endif
   value->scheduleEvent(RequestableValueBase::startMeasurement_, value->interval_);
   return true;
@@ -30,8 +30,8 @@ boolean RequestableValueBase::startMeasurement_(EventBase* event)
   RequestableValueBase* value = static_cast<RequestableValueBase*>(event);
   Duration conversionTime = value->startMeasurementCb_();
   #ifdef MYS_TOOLKIT_DEBUG
-  Serial.print("startMeasurement conversionTime: ");
-  Serial.println(conversionTime.getMilis());
+  MYS_TOOLKIT_SERIAL.print("startMeasurement conversionTime: ");
+  MYS_TOOLKIT_SERIAL.println(conversionTime.getMilis());
   #endif
   value->scheduleEvent(RequestableValueBase::readValue_, conversionTime);
   return true;

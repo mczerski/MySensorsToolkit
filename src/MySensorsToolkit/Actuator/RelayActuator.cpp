@@ -1,15 +1,19 @@
 #include "RelayActuator.h"
 
+#ifdef MYS_TOOLKIT_DEBUG
+extern HardwareSerial MYS_TOOLKIT_SERIAL;
+#endif
+
 namespace mys_toolkit {
 
 void RelayActuator::sendCurrentState_()
 {
   lightMsg_.send(relay_.getState());
   #ifdef MYS_TOOLKIT_DEBUG
-  Serial.print("sendCurrentState ");
-  Serial.print(relay_.getState());
-  Serial.print(" for child id ");
-  Serial.println(lightMsg_.getSensor());
+  MYS_TOOLKIT_SERIAL.print("sendCurrentState ");
+  MYS_TOOLKIT_SERIAL.print(relay_.getState());
+  MYS_TOOLKIT_SERIAL.print(" for child id ");
+  MYS_TOOLKIT_SERIAL.println(lightMsg_.getSensor());
   #endif
 }
 
@@ -39,12 +43,12 @@ void RelayActuator::receive_(const MyMessage &message)
       bool requestedState = message.getBool();
 
       #ifdef MYS_TOOLKIT_DEBUG
-      Serial.print("Changing relay [");
-      Serial.print(message.sensor);
-      Serial.print("] state to ");
-      Serial.print(requestedState);
-      Serial.print( ", from " );
-      Serial.println(relay_.getState());
+      MYS_TOOLKIT_SERIAL.print("Changing relay [");
+      MYS_TOOLKIT_SERIAL.print(message.sensor);
+      MYS_TOOLKIT_SERIAL.print("] state to ");
+      MYS_TOOLKIT_SERIAL.print(requestedState);
+      MYS_TOOLKIT_SERIAL.print( ", from " );
+      MYS_TOOLKIT_SERIAL.println(relay_.getState());
       #endif
 
       relay_.set(requestedState);

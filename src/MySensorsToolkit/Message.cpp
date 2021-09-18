@@ -1,6 +1,10 @@
 #include "Message.h"
 #include <MySensorsToolkit/MySensors.h>
 
+#ifdef MYS_TOOLKIT_DEBUG
+extern HardwareSerial MYS_TOOLKIT_SERIAL;
+#endif
+
 namespace mys_toolkit {
 
 bool Message::send_(Message &msg)
@@ -10,11 +14,11 @@ bool Message::send_(Message &msg)
     return true;
   }
   #ifdef MYS_TOOLKIT_DEBUG
-  Serial.print("Message: failed to send ");
-  Serial.print("t=");
-  Serial.print(msg.getType());
-  Serial.print(",c=");
-  Serial.println(msg.getSensor());
+  MYS_TOOLKIT_SERIAL.print("Message: failed to send ");
+  MYS_TOOLKIT_SERIAL.print("t=");
+  MYS_TOOLKIT_SERIAL.print(msg.getType());
+  MYS_TOOLKIT_SERIAL.print(",c=");
+  MYS_TOOLKIT_SERIAL.println(msg.getSensor());
   #endif
   return false;
 }

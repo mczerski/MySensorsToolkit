@@ -4,6 +4,10 @@
 #include <MySensorsToolkit/Message.h>
 #include <MySensorsToolkit/Duration.h>
 
+#ifdef MYS_TOOLKIT_DEBUG
+extern HardwareSerial MYS_TOOLKIT_SERIAL;
+#endif
+
 namespace mys_toolkit {
 
 class RequestableValueBase : public EventBase, public ActuatorBase
@@ -35,8 +39,8 @@ class RequestableValue : public RequestableValueBase
   void updateValueCb_() override {
     value_ = readValueCb_();
     #ifdef MYS_TOOLKIT_DEBUG
-    Serial.print("readValue: ");
-    Serial.println(value_);
+    MYS_TOOLKIT_SERIAL.print("readValue: ");
+    MYS_TOOLKIT_SERIAL.println(value_);
     #endif
   }
   void send() {
