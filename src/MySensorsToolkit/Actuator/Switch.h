@@ -5,12 +5,19 @@
 namespace mys_toolkit {
 
 class Switch {
-  uint8_t activeLow_;
   virtual bool doUpdate_() = 0;
 public:
-  Switch(bool activeLow = false);
   bool update();
 };
+
+class GPIOSwitch: public Switch {
+  uint8_t pin_;
+  bool activeLow_;
+  bool doUpdate_() override;
+public:
+  GPIOSwitch(uint8_t pin, bool activeLow = false);
+};
+
 
 } //mys_toolkit
 

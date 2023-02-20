@@ -12,8 +12,6 @@ namespace mys_toolkit {
 
 class RequestableValueBase : public EventBase, public ActuatorBase
 {
-  uint8_t childId_;
-  mysensors_sensor_t sensorType_;
   Duration interval_;
   void scheduleEvent(boolean (*cb)(EventBase*), Duration delayMs);
   static boolean readValue_(EventBase* event);

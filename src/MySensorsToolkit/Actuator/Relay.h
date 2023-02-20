@@ -19,10 +19,11 @@ public:
 class GPIORelay : public Relay
 {
   int relayPin_;
+  bool activeLow_;
   void updateState_(bool state) override;
 
 public:
-  GPIORelay(int relayPin);
+  GPIORelay(int relayPin, bool activeLow = false);
 };
 
 } //mys_toolkit

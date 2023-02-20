@@ -10,6 +10,10 @@
 extern HardwareSerial MYS_TOOLKIT_SERIAL;
 #endif
 
+#ifndef digitalPinToInterrupt
+#define digitalPinToInterrupt(p) (p)
+#endif
+
 namespace mys_toolkit {
 
 void SensorBase::setLed_(uint8_t value)

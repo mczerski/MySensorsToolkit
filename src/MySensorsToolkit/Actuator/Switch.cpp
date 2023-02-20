@@ -1,16 +1,24 @@
 #include "Switch.h"
 
-namespace mys_toolkit {
+#include <Arduino.h>
 
-Switch::Switch(bool activeLow)
-  : activeLow_(activeLow)
-{
-}
+namespace mys_toolkit {
 
 bool Switch::update()
 {
-  bool state = doUpdate_();
+  return doUpdate_();
+}
+
+bool GPIOSwitch::doUpdate_() {
+  auto state = digitalRead(pin_);
   return activeLow_ ? !state : state;
+}
+    
+GPIOSwitch::GPIOSwitch(uint8_t pin, bool activeLow)
+  : pin_(pin),
+    activeLow_(activeLow)
+{
+  pinMode(pin_, INPUT);
 }
 
 } //mys_toolkit

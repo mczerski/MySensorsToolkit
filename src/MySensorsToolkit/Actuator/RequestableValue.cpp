@@ -49,7 +49,7 @@ void RequestableValueBase::begin_()
 
 void RequestableValueBase::receive_(const MyMessage &message)
 {
-  if (message.type == sensorType_ and mGetCommand(message) == C_REQ)
+  if (message.type == msg_.getType() and mGetCommand(message) == C_REQ)
     send();
 }
 

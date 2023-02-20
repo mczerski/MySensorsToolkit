@@ -38,11 +38,12 @@ void Relay::set(bool state)
 
 void GPIORelay::updateState_(bool state)
 {
-  digitalWrite(relayPin_, !state);
+  digitalWrite(relayPin_, activeLow_ ? !state : state);
 }
 
-GPIORelay::GPIORelay(int relayPin)
-  : relayPin_(relayPin)
+GPIORelay::GPIORelay(int relayPin, bool activeLow)
+  : relayPin_(relayPin),
+    activeLow_(activeLow)
 {
   pinMode(relayPin_, OUTPUT);
   updateState_(getState());

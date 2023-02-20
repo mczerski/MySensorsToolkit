@@ -12,7 +12,7 @@ inline void setMessageValue(MyMessage &msg, ValueType value) {
 template <>
 inline void setMessageValue<float>(MyMessage &msg, float value)
 {
-  msg.set(value, 1);
+  msg.set(value, 3);
 }
 
 template<typename ValueType>
