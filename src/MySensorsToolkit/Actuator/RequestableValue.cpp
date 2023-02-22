@@ -47,16 +47,9 @@ void RequestableValueBase::begin_()
   begin2_();
 }
 
-void RequestableValueBase::receive_(const MyMessage &message)
-{
-  if (message.type == msg_.getType() and mGetCommand(message) == C_REQ)
-    send();
-}
-
-RequestableValueBase::RequestableValueBase(uint8_t sensorId, mysensors_data_t type, mysensors_sensor_t sensorType, Duration interval)
+RequestableValueBase::RequestableValueBase(uint8_t sensorId, mysensors_sensor_t sensorType, Duration interval)
   : ActuatorBase(sensorId, sensorType),
-    interval_(interval),
-    msg_(sensorId, type)
+    interval_(interval)
 {
 }
 
