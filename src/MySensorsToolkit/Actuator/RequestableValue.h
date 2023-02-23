@@ -101,6 +101,9 @@ private:
     if (mGetCommand(message) == C_REQ) {
       handleReq_<VALUES_SIZE-1>(message);
     }
+    else {
+      receive2_(message);
+    }
   }
   template <size_t Idx>
   void doSendOnChange_(const Values &values) {
@@ -130,6 +133,7 @@ private:
     values_ = values;
   }
   virtual Values readValuesCb_() = 0;
+  virtual void receive2_(const MyMessage &message) {};
 };
 
 } //mys_toolkit
