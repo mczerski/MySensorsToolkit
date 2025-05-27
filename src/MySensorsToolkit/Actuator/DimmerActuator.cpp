@@ -8,11 +8,17 @@ namespace mys_toolkit {
 
 uint8_t DimmerActuator::fromPercentage_(uint8_t percentage)
 {
+  if (percentage == 1) {
+    return 1;
+  }
   return uint8_t(round(255.0*percentage/100));
 }
 
 uint8_t DimmerActuator::fromLevel_(uint8_t level)
 {
+  if (level >= 1 and level <= 2) {
+      return 1;
+  }
   return uint8_t(round(100.0*level/255));
 }
 
