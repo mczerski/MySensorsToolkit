@@ -2,6 +2,12 @@
 
 namespace mys_toolkit {
 
+DimmerDriver::DimmerDriver(bool inverted): inverted_(inverted) {}
+
+void DimmerDriver::driveLedPin_(uint8_t pin, uint8_t level) {
+  analogWrite(pin, inverted_ ? 255 - level : level);
+}
+
 Duration Dimmer::fadeDelay_()
 {
   auto delayFactor = maxDimmSpeed_ - dimmSpeed_ + 1;
@@ -25,7 +31,7 @@ bool Dimmer::updateLevel_()
   if (currentTime < nextChangeTime_)
     return false;
   handleDimming_();
-  setLevel_(currentLevel_);
+  dimmerDriver_.setLevel(currentLevel_);
   Duration fadeDelay = fadeDelay_();
   if (isInSlowDimming_())
     fadeDelay *= 3;
@@ -80,26 +86,6 @@ void Dimmer::handleDimming_()
   }
 }
 
-bool Dimmer::isRising_(bool pinValue)
-{
-  return pinValue == true and lastPinValue_ == false;
-}
-
-bool Dimmer::isHeldLongEnough_(bool pinValue)
-{
-  return pinValue == true and lastPinValue_ == true and lastPinRiseTime_ + Duration(2000) < Duration();
-}
-
-bool Dimmer::isFalling(bool pinValue)
-{
-  return pinValue == false and lastPinValue_ == true;
-}
-
-bool Dimmer::isLongPress()
-{
-  return lastPinRiseTime_ + Duration(500) < Duration();
-}
-
 bool Dimmer::isInSlowDimming_()
 {
   return state_ == SLOW_DIMMING_DOWN or state_ == SLOW_DIMMING_UP;
@@ -133,56 +119,22 @@ void Dimmer::stopSlowDimming_()
     state_ = ON;
 }
 
-void Dimmer::driveLedPin_(uint8_t pin, uint8_t level)
+Dimmer::Dimmer(DimmerDriver & dimmerDriver, uint8_t dimmSpeed)
+  : dimmerDriver_(dimmerDriver), dimmSpeed_(min(maxDimmSpeed_, dimmSpeed))
 {
-  analogWrite(pin, inverted_ ? 255 - level : level);
-}
-
-void Dimmer::init_()
-{
-  setLevel_(currentLevel_);
-}
-
-Dimmer::Dimmer(bool inverted, uint8_t dimmSpeed, Functions functions)
-  : lastPinValue_(false), state_(OFF), currentLevel_(0),
-    requestedLevel_(0), lastLevel_(0), inverted_(inverted),
-    dimmSpeed_(min(maxDimmSpeed_, dimmSpeed)),
-    functions_(functions)
-{
+  dimmerDriver_.setLevel(currentLevel_);
 }
 
 Dimmer::~Dimmer()
 {
 }
 
-bool Dimmer::update(bool value)
-{
-  if (isRising_(value)) {
-    if (not functions_.slowDimming and not functions_.fullBrightness)
-      set(state_ == OFF);
-    else
-      lastPinRiseTime_ = Duration();
-  }
-  else if (isHeldLongEnough_(value)) {
-    if (not isInSlowDimming_() and functions_.slowDimming) {
-      triggerLevelChange_();
-      startSlowDimming_();
-    }
-  }
-  else if (isFalling(value)) {
-    if (isInSlowDimming_() and functions_.slowDimming) {
-      stopSlowDimming_();
-      lastPinValue_ = value;
-      return true;
-    }
-    else if (isLongPress() and functions_.fullBrightness) {
-      request(255);
-    }
-    else if (functions_.slowDimming or functions_.fullBrightness) {
-      set(state_ == OFF or state_ == DIMMING_DOWN);
-    }
-  }
-  lastPinValue_ = value;
+void Dimmer::begin() {
+  dimmerDriver_.begin();
+}
+
+bool Dimmer::update(bool value) {
+  update_(value);
   return updateLevel_();
 }
 
@@ -201,6 +153,10 @@ void Dimmer::request(uint8_t value)
   requestedLevel_ = value;
 }
 
+void Dimmer::toggle() {
+  set(state_ == OFF or state_ == DIMMING_DOWN);
+}
+
 void Dimmer::set(bool on)
 {
   if (on) {
@@ -214,6 +170,91 @@ void Dimmer::set(bool on)
 uint8_t Dimmer::getLevel()
 {
   return currentLevel_;
+}
+
+PushPullDimmer::PushPullDimmer(DimmerDriver & dimmerDriver, uint8_t dimmSpeed, Functions functions)
+  : Dimmer(dimmerDriver, dimmSpeed), functions_(functions) {}
+
+void PushPullDimmer::begin_() {
+}
+
+bool PushPullDimmer::update_(bool value)
+{
+  if (isRising_(value)) {
+    if (not functions_.slowDimming and not functions_.fullBrightness)
+      toggle();
+    else
+      lastPinRiseTime_ = Duration();
+  }
+  else if (isHeldLongEnough_(value)) {
+    if (not isInSlowDimming_() and functions_.slowDimming) {
+      startSlowDimming_();
+    }
+  }
+  else if (isFalling(value)) {
+    if (isInSlowDimming_() and functions_.slowDimming) {
+      stopSlowDimming_();
+      lastPinValue_ = value;
+      return true;
+    }
+    else if (isLongPress_() and functions_.fullBrightness) {
+      request(255);
+    }
+    else if (functions_.slowDimming or functions_.fullBrightness) {
+      toggle();
+    }
+  }
+  lastPinValue_ = value;
+}
+
+bool PushPullDimmer::isRising_(bool pinValue)
+{
+  return pinValue == true and lastPinValue_ == false;
+}
+
+bool PushPullDimmer::isHeldLongEnough_(bool pinValue)
+{
+  return pinValue == true and lastPinValue_ == true and lastPinRiseTime_ + Duration(2000) < Duration();
+}
+
+bool PushPullDimmer::isFalling(bool pinValue)
+{
+  return pinValue == false and lastPinValue_ == true;
+}
+
+bool PushPullDimmer::isLongPress_()
+{
+  return lastPinRiseTime_ + Duration(500) < Duration();
+}
+
+PushDimmer::PushDimmer(DimmerDriver & dimmerDriver, uint8_t dimmSpeed)
+  : Dimmer(dimmerDriver, dimmSpeed) {}
+
+void PushDimmer::begin_() {
+}
+
+bool PushDimmer::update_(bool value)
+{
+  if (isRising_(value)) {
+    if (isDoublePress_()) {
+      request(255);
+    }
+    else {
+      toggle();
+    }
+    lastPinRiseTime_ = Duration();
+  }
+  lastPinValue_ = value;
+}
+
+bool PushDimmer::isRising_(bool pinValue)
+{
+  return pinValue == true and lastPinValue_ == false;
+}
+
+bool PushDimmer::isDoublePress_()
+{
+  return not (lastPinRiseTime_ + Duration(200) < Duration());
 }
 
 } //mys_toolkit
