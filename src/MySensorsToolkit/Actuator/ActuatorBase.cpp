@@ -2,6 +2,7 @@
 #include <MySensorsToolkit/Message.h>
 #include <MySensorsToolkit/MySensors.h>
 #include <MySensorsToolkit/utils.h>
+#include <MySensorsToolkit/Parameter.h>
 
 #include <SoftTimer.h>
 
@@ -42,6 +43,7 @@ void ActuatorBase::present()
 {
   for (size_t i=0; i<sensorsCount_; i++)
     ::present(sensors_[i]->sensorId_, sensors_[i]->sensorType_);
+  ParameterBase::present();
 }
 
 void ActuatorBase::update()
@@ -69,6 +71,7 @@ void ActuatorBase::receive(const MyMessage &message)
   for (size_t i=0; i<sensorsCount_; i++)
     if (sensors_[i]->sensorId_ == message.sensor)
       sensors_[i]->receive_(message);
+  ParameterBase::receive(message);
 }
 
 int16_t ActuatorBase::addEvent(EventBase* evt)

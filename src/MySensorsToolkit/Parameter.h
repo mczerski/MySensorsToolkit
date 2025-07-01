@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MySensorsToolkit/utils.h>
+#include "utils.h"
 
 namespace mys_toolkit {
 

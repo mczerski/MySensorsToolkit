@@ -1,7 +1,7 @@
-#include "Parameter.h"
 #include "SensorValue.h"
 #include "SensorBase.h"
 #include "PowerManager.h"
+#include <MySensorsToolkit/Parameter.h>
 #include <MySensorsToolkit/utils.h>
 #include <MySensorsToolkit/Message.h>
 #include <MySensorsToolkit/MySensors.h>

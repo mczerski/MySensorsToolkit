@@ -2,7 +2,7 @@
 
 #include "SensorBase.h"
 #include "SensorValue.h"
-#include "Parameter.h"
+#include <MySensorsToolkit/Parameter.h>
 
 namespace mys_toolkit {
 

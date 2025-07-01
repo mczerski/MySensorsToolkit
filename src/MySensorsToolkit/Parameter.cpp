@@ -1,5 +1,5 @@
 #include "Parameter.h"
-#include <MySensorsToolkit/MySensors.h>
+#include "MySensors.h"
 
 namespace mys_toolkit {
 
